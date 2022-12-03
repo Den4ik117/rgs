@@ -44,5 +44,7 @@
         </ul>
 {{--    </form>--}}
 </div>
+
+@include('metricts')
 </body>
 </html>
