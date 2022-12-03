@@ -22,7 +22,7 @@ class ImportUsersFromCSV extends Command
      *
      * @var string
      */
-    protected $description = 'Import users from CSV file.';
+    protected $description = 'Import users from CSV file';
 
     /**
      * Execute the console command.
