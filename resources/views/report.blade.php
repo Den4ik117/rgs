@@ -85,6 +85,7 @@
             <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://en.wikibooks.org/wiki/LaTeX/Mathematics">Руководство по LaTeX, которая позволяет создавать сложные математические формулы</a></li>
             <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://docs.google.com/spreadsheets/d/1TxpEzQQ-ObY7dnmQjaghiWfDDdwoflRO05VugkxgZYY/edit?usp=sharing">Ведомость по предмету «Основы веб-технологий»</a></li>
             <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://docs.google.com/spreadsheets/d/17ocFGE22HsBG8AK1DLlnHBl4MaTKWsPjeZ7M3ywS_n4/edit?usp=sharing">Ведомость по предмету «Технологии программирования»</a></li>
+            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://github.com/Den4ik117/rgs">Исходный код программы</a></li>
         </ul>
     </div>
 
