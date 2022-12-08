@@ -2,6 +2,7 @@
 /**
  * @var \Illuminate\Support\Collection $users
  * @var \Illuminate\Support\Collection $usersSortedByX
+ * @var \Illuminate\Support\Collection $usersSortedByY
  */
 @endphp
 <!doctype html>
@@ -156,30 +157,89 @@
         </tr>
         </thead>
         <tbody>
-        @php
-            $leftSpacing = $xMin->first()->total_x;
-            $rightSpacing = $leftSpacing + $h;
-        @endphp
+            @foreach($intervals as $interval)
+                <tr>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 
-        @foreach(range(0, $resultN - 1) as $r)
-            @php
-                $n_i = $users->whereBetween('total_x', [$loop->first ? $leftSpacing : $leftSpacing + 1, $rightSpacing])->count();
-            @endphp
+    <h3 class="text-lg mb-4">Гистограмма частот</h3>
+
+    <div class="chart_div" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals)->pluck('middle')->toJson() }}" data-labels="[0, 100, 5]"></div>
+
+    <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
+    <p class="text-base mb-4 flex flex-col gap-2">
+        <span>$ \overline{x}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x_i \omega_i} = {{ $expectedValue['x']['formula'] }} = {{ $expectedValue['x']['result'] }} $</span>
+        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $expectedValue['x']['formula2'] }} = {{ $expectedValue['x']['result2'] }} $</span>
+        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['x']['formula3'] }} = {{ $expectedValue['x']['result3'] }} $</span>
+        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['x']['formula4'] }} = {{ $expectedValue['x']['result4'] }} $</span>
+        <span>$ S = \sqrt{S^2} = {{ $expectedValue['x']['formula5'] }} = {{ $expectedValue['x']['result5'] }} $</span>
+    </p>
+
+
+
+    <h3 class="text-lg mb-4">Обработка одномерной СВ $ Y $.</h3>
+
+    <p class="text-base mb-4 flex flex-col gap-2">
+        <span>$ Y = \{ y_i \} $</span>
+        @php
+            $yMin = $usersSortedByY->shift();
+            $yMax = $usersSortedByY->pop();
+            $n = 1 + 3.22 * (log($totalUsers) / log(10));
+//            $resultN = (floor($n) % 2 === 0) ? ceil($n) : floor($n);
+            $resultN = ceil($n);
+            $h = ($yMax->first()->total_y - $yMin->first()->total_y) / $resultN;
+        @endphp
+        <span>$ y_{min} = {{ $yMin->first()->total_y }} \, ({{ $usersSortedByY->shift()->first()->total_y }}); \; m = {{ $yMin->count() }} $</span>
+        <span>$ y_{max} = {{ $yMax->first()->total_y }} \, ({{ $usersSortedByY->pop()->first()->total_y }}); \; m = {{ $yMax->count() }} $</span>
+        <span>$ y_{max} - y_{min} = {{ $yMax->first()->total_y }} - {{ $yMin->first()->total_y }} = {{ $yMax->first()->total_y - $yMin->first()->total_y }} - \mathrm{размах \, выборки} $</span>
+        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \frac{\ln N}{\ln 10} = 1 + 3.22 \frac{\ln {{ $totalUsers }}}{\ln 10} = {{ $n }} \approx {{ $resultN }} - \mathrm{число \, интервалов} $</span>
+        <span>$ h = \frac{y_{max} - y_{min}}{n} = \frac{ {{ $yMax->first()->total_y }} - {{ $yMin->first()->total_y }} }{ {{ $resultN }} } = {{ $h }} - \mathrm{число \, групп \, (интервалов)} $</span>
+    </p>
+
+    <h3 class="text-lg mb-4">Построим статистический ряд.</h3>
+
+    <table class="w-full mb-4">
+        <thead>
+        <tr>
+            <th class="border px-6 py-4 text-center">$ (y_{i - 1}; y_i] $</th>
+            <th class="border px-6 py-4 text-center">$ n_i $</th>
+            <th class="border px-6 py-4 text-center">$ \omega_i = \frac{n_i}{N}$</th>
+            <th class="border px-6 py-4 text-center">$ y_{i \, сер} $</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($intervals2 as $interval)
             <tr>
-                <td class="border px-6 py-4 text-center">
-                    $ {{ $loop->first ? '[' : '(' }} {{ $leftSpacing }}; {{ $rightSpacing }} ] $
-                </td>
-                <td class="border px-6 py-4 text-center">$ {{ $n_i }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ round($n_i / $totalUsers, 4) }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ ($leftSpacing + $rightSpacing) / 2 }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>
             </tr>
-            @php
-                $leftSpacing += $h;
-                $rightSpacing += $h;
-            @endphp
         @endforeach
         </tbody>
     </table>
+
+    <h3 class="text-lg mb-4">Гистограмма частот</h3>
+
+    <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals2)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals2)->pluck('middle')->toJson() }}" data-labels="[0, 44, 4.4]"></div>
+
+    <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
+    <p class="text-base mb-4 flex flex-col gap-2">
+        <span>$ \overline{y}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y_i \omega_i} = {{ $expectedValue['y']['formula'] }} = {{ $expectedValue['y']['result'] }} $</span>
+        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y^2_i \omega_i} - (\overline{y}_в)^2 = {{ $expectedValue['y']['formula2'] }} = {{ $expectedValue['y']['result2'] }} $</span>
+        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['y']['formula3'] }} = {{ $expectedValue['y']['result3'] }} $</span>
+        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['y']['formula4'] }} = {{ $expectedValue['y']['result4'] }} $</span>
+        <span>$ S = \sqrt{S^2} = {{ $expectedValue['y']['formula5'] }} = {{ $expectedValue['y']['result5'] }} $</span>
+    </p>
+
+{{--    <div class="chart_div"></div>--}}
+{{--    {{ dd($intervals) }}--}}
 
 </article>
 
