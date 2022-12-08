@@ -72,6 +72,7 @@ class ReportController extends Controller
         ];
 
         foreach (['x', 'y'] as $randomValue) {
+            $oldIntervals = $intervals;
             $intervals = $randomValue === 'x' ? $intervals : $intervals2;
             $formula = [];
             foreach ($intervals as $interval) {
@@ -95,6 +96,7 @@ class ReportController extends Controller
 
             $expectedValue[$randomValue]['formula5'] = '\sqrt{' . $expectedValue[$randomValue]['result4'] . '}';
             $expectedValue[$randomValue]['result5'] = round(sqrt($expectedValue[$randomValue]['result4']), 4);
+            $intervals = $oldIntervals;
         }
 //        dd($expectedValue);
 
