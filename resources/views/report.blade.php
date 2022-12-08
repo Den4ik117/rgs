@@ -50,9 +50,14 @@
         <p class="text-base mb-4 flex flex-col gap-2">
             <span>$ N - \mathrm{число \, единиц \, совокупности} $</span>
             <span>$ n - \mathrm{число \, групп \, (интервалов)} $</span>
-            <span>$ x_{min} - \mathrm{нижняя \, граница \, интервала} $</span>
-            <span>$ x_{max} - \mathrm{верхняя \, граница \, интервала} $</span>
+            <span>$ x_{min}, y_{min} - \mathrm{нижняя \, граница \, интервала} $</span>
+            <span>$ x_{max}, y_{max} - \mathrm{верхняя \, граница \, интервала} $</span>
             <span>$ h - \mathrm{величина \, интервала} $</span>
+            <span>$ \overline{x}_в, \overline{y}_в - \mathrm{выборочное \, среднее} $</span>
+            <span>$ \overline{D}_в - \mathrm{средняя \, выборочная \, дисперсия} $</span>
+            <span>$ \sigma_в - \mathrm{выборочное \, среднее \, квадратическое \, отклонение} $</span>
+            <span>$ S^2 - \mathrm{несмещённая \, состоятельная \, оценка \, генеральной \, дисперсии} $</span>
+            <span>$ S - \mathrm{исправленное \, выборочное \, среднее \, квадратическое \, отклонение} $</span>
         </p>
     </div>
 
