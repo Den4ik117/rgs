@@ -17,8 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased bg-white p-4">
 <article>
@@ -173,7 +172,7 @@
         </tbody>
     </table>
 
-    <h3 class="text-lg mb-4">Гистограмма частот</h3>
+    <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
     <div class="chart_div" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals)->pluck('middle')->toJson() }}" data-labels="[0, 100, 5]"></div>
 
@@ -184,9 +183,42 @@
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['x']['formula3'] }} = {{ $expectedValue['x']['result3'] }} $</span>
         <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['x']['formula4'] }} = {{ $expectedValue['x']['result4'] }} $</span>
         <span>$ S = \sqrt{S^2} = {{ $expectedValue['x']['formula5'] }} = {{ $expectedValue['x']['result5'] }} $</span>
+        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = \mathrm{много} - \mathrm{коэффициент \, асимметрии} $</span>
+        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = \mathrm{много} - \mathrm{коэффициент \, эксцесса}$</span>
     </p>
 
+    <p class="text-base mb-4">
+        Коэффициент асимметрии характеризует меру скошенности графика/вправо, а эксцесс ― меру его высоты.
+        То, что эти коэффициенты принимают большие значения, ожидаемо.
+        Из полигона частот мы уже могли сделать вывод, что распределение не является нормальным.
+        Большие значения коэффициентов помогают лишний раз убедиться, что распределение отличное от нормального.
+        На перёд ― для СВ $ Y $ коэффициенты тоже принимают большие значения, что позволяет сделать аналогичный вывод.
+    </p>
 
+    <h3 class="text-lg mb-4">Найдём эмпирическую функцию распределения и построим ее график.</h3>
+
+    <table class="w-full mb-4">
+        <thead>
+        <tr>
+            <th class="border px-6 py-4 text-center">$ (x_{i - 1}; x_i] $</th>
+            <th class="border px-6 py-4 text-center">$ x $</th>
+            <th class="border px-6 py-4 text-center">$ F^{\ast}(x) = W(X < x) $</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($empiricalFunctionArray as $interval)
+            <tr>
+                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>
+            </tr>
+        @endforeach
+        </tbody>
+    </table>
+
+    <h3 class="text-lg mb-4">Кумулята:</h3>
+
+    <div class="chart_div_3" data-data="{{ collect($empiricalFunctionArray)->toJson() }}"></div>
 
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ Y $.</h3>
 
@@ -230,7 +262,7 @@
         </tbody>
     </table>
 
-    <h3 class="text-lg mb-4">Гистограмма частот</h3>
+    <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
     <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals2)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals2)->pluck('middle')->toJson() }}" data-labels="[0, 44, 4.4]"></div>
 
@@ -241,7 +273,34 @@
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['y']['formula3'] }} = {{ $expectedValue['y']['result3'] }} $</span>
         <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['y']['formula4'] }} = {{ $expectedValue['y']['result4'] }} $</span>
         <span>$ S = \sqrt{S^2} = {{ $expectedValue['y']['formula5'] }} = {{ $expectedValue['y']['result5'] }} $</span>
+        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^3 \omega_i}}{S^3} = \mathrm{много} - \mathrm{коэффициент \, асимметрии} $</span>
+        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^4 \omega_i}}{S^4} - 3 = \mathrm{много} - \mathrm{коэффициент \, эксцесса}$</span>
     </p>
+
+    <h3 class="text-lg mb-4">Найдём эмпирическую функцию распределения и построим ее график.</h3>
+
+    <table class="w-full mb-4">
+        <thead>
+        <tr>
+            <th class="border px-6 py-4 text-center">$ (y_{i - 1}; y_i] $</th>
+            <th class="border px-6 py-4 text-center">$ y $</th>
+            <th class="border px-6 py-4 text-center">$ F^{\ast}(y) = W(Y < y) $</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($empiricalFunctionArrayY as $interval)
+            <tr>
+                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>
+            </tr>
+        @endforeach
+        </tbody>
+    </table>
+
+    <h3 class="text-lg mb-4">Кумулята:</h3>
+
+    <div class="chart_div_4" data-data="{{ collect($empiricalFunctionArrayY)->toJson() }}"></div>
 
 {{--    <div class="chart_div"></div>--}}
 {{--    {{ dd($intervals) }}--}}

@@ -5,6 +5,7 @@ import 'chartist/dist/index.css';
 import.meta.glob([
     '../images/**',
 ]);
+
 /*new BarChart('.chart_div', {
 
     labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'],
@@ -181,6 +182,92 @@ const chart2 = new LineChart(chartDiv2, {
         // }
     // }]
 ]);
+
+// alert('test2')
+
+const chartDiv3 = document.querySelector('.chart_div_3');
+let series3 = JSON.parse(chartDiv3.dataset.data);
+series3 = [{
+    x: 0, y: 0
+}, ...series3.slice(1, series3.length - 1), {
+    x: series3.slice(1, series3.length - 1).pop().x + 10, y: 1
+}, {
+    x: series3.slice(1, series3.length - 1).pop().x + 10 * 2, y: 1
+}];
+
+const chart3 = new LineChart(chartDiv3, {
+    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+    // Naming the series with the series object array notation
+    series: [{
+        name: 'series-1',
+        data: series3
+    }]
+}, {
+    axisX: {
+        type: AutoScaleAxis,
+        onlyInteger: true
+    },
+    fullWidth: true,
+    // Within the series options you can use the series names
+    // to specify configuration that will only be used for the
+    // specific series.
+    series: {
+        'series-1': {
+            // lineSmooth: Interpolation.cardinal(),
+            lineSmooth: Interpolation.none(),
+            showArea: true,
+        },
+        // 'series-2': {
+        //     lineSmooth: Interpolation.simple(),
+            // showArea: true
+        // },
+        // 'series-3': {
+        //     showPoint: false
+        // }
+    }
+});
+
+const chartDiv4 = document.querySelector('.chart_div_4');
+let series4 = JSON.parse(chartDiv4.dataset.data);
+series4 = [{
+    x: 0, y: 0
+}, ...series4.slice(1, series4.length - 1), {
+    x: series4.slice(1, series4.length - 1).pop().x + 10, y: 1
+}, {
+    x: series4.slice(1, series4.length - 1).pop().x + 10 * 2, y: 1
+}];
+
+const chart4 = new LineChart(chartDiv4, {
+    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+    // Naming the series with the series object array notation
+    series: [{
+        name: 'series-1',
+        data: series4
+    }]
+}, {
+    axisX: {
+        type: AutoScaleAxis,
+        onlyInteger: true
+    },
+    fullWidth: true,
+    // Within the series options you can use the series names
+    // to specify configuration that will only be used for the
+    // specific series.
+    series: {
+        'series-1': {
+            // lineSmooth: Interpolation.cardinal(),
+            lineSmooth: Interpolation.none(),
+            showArea: true,
+        },
+        // 'series-2': {
+        //     lineSmooth: Interpolation.simple(),
+            // showArea: true
+        // },
+        // 'series-3': {
+        //     showPoint: false
+        // }
+    }
+});
 
 
 // const fileInputs = document.querySelectorAll('input[type=file]');

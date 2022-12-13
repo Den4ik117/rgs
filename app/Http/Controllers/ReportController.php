@@ -43,6 +43,36 @@ class ReportController extends Controller
             $intervals[] = $interval;
         }
 
+        $leftSpacing = $xMin->first()->total_x;
+        $rightSpacing = $leftSpacing + $h;
+        $empiricalFunctionArray = [];
+        $empiricalFunctionArray[] = [PHP_INT_MIN, $leftSpacing];
+        for ($i = 0; $i < $resultN; $i++) {
+            $empiricalFunctionArray[] = [$leftSpacing, $rightSpacing];
+            $leftSpacing += $h;
+            $rightSpacing += $h;
+        }
+        $empiricalFunctionArray[] = [$leftSpacing, PHP_INT_MAX];
+        $empiricalFunctionArray = array_map(function ($intervals) use ($totalUsers) {
+            $result = User::query()
+                    ->whereNotNull('total_x')
+                    ->whereNotNull('total_y')
+                    ->where('total_x', '<', $intervals[1])
+                    ->count() / $totalUsers;
+            return [
+                'left' => $intervals[0] === PHP_INT_MIN ? '-\infty' : $intervals[0],
+                'x' => $intervals[1] === PHP_INT_MAX ? '+\infty' : $intervals[1],
+                'y' => round($result, 4)
+            ];
+        }, $empiricalFunctionArray);
+//        dd(User::query()
+//            ->whereNotNull('total_x')
+//            ->whereNotNull('total_y')
+//            ->where('total_x', '<', 101)
+//            ->count(), $resultN
+//        );
+//        dd($empiricalFunctionArray);
+
         $yMin = $usersSortedByY->first();
         $yMax = $usersSortedByY->last();
         $n = 1 + 3.22 * (log($totalUsers) / log(10));
@@ -63,6 +93,29 @@ class ReportController extends Controller
             $rightSpacing += $h;
             $intervals2[] = $interval;
         }
+
+        $leftSpacing = $yMin->first()->total_y;
+        $rightSpacing = $leftSpacing + $h;
+        $empiricalFunctionArrayY = [];
+        $empiricalFunctionArrayY[] = [PHP_INT_MIN, $leftSpacing];
+        for ($i = 0; $i < $resultN; $i++) {
+            $empiricalFunctionArrayY[] = [$leftSpacing, $rightSpacing];
+            $leftSpacing += $h;
+            $rightSpacing += $h;
+        }
+        $empiricalFunctionArrayY[] = [$leftSpacing, PHP_INT_MAX];
+        $empiricalFunctionArrayY = array_map(function ($intervals) use ($totalUsers) {
+            $result = User::query()
+                    ->whereNotNull('total_x')
+                    ->whereNotNull('total_y')
+                    ->where('total_y', '<', $intervals[1])
+                    ->count() / $totalUsers;
+            return [
+                'left' => $intervals[0] === PHP_INT_MIN ? '-\infty' : $intervals[0],
+                'x' => $intervals[1] === PHP_INT_MAX ? '+\infty' : $intervals[1],
+                'y' => round($result, 4)
+            ];
+        }, $empiricalFunctionArrayY);
 
 //        dd($intervals2);
 
@@ -100,6 +153,6 @@ class ReportController extends Controller
         }
 //        dd($expectedValue);
 
-        return view('report', compact(['users', 'totalUsers', 'chunkSize', 'usersSortedByX', 'usersSortedByY', 'intervals', 'intervals2', 'expectedValue']));
+        return view('report', compact(['users', 'totalUsers', 'chunkSize', 'usersSortedByX', 'usersSortedByY', 'intervals', 'intervals2', 'expectedValue', 'empiricalFunctionArray', 'empiricalFunctionArrayY']));
     }
 }
