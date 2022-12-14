@@ -132,7 +132,7 @@ class ReportController extends Controller
                 $formula[] = $interval['middle'] . '\cdot' . $interval['frequency'];
             }
             $expectedValue[$randomValue]['formula'] = implode(' + ', $formula);
-            $expectedValue[$randomValue]['result'] = collect($intervals)->map(fn ($inter) => $inter['middle'] * $inter['frequency'])->sum();
+            $expectedValue[$randomValue]['result'] = round(collect($intervals)->map(fn ($inter) => $inter['middle'] * $inter['frequency'])->sum(), 4);
 
             $formula = [];
             foreach ($intervals as $interval) {
@@ -242,10 +242,34 @@ class ReportController extends Controller
                 ->where('total_y', $total_y)
                 ->whereNotNull('total_x')
                 ->count();
-            $sResult[] = round(array_sum($sResult2) / $c, 2);
+            $sResult[] = round(array_sum($sResult2) / $c, 0);
             $graphic[] = ['x' => round(array_sum($sResult2) / $c, 2), 'y' => $total_y];
         }
         $double[] = ['$\overline{x}_{y=y_i}$', ...$sResult];
+
+        $XY = [];
+        $XY_formula = [];
+        $counter = 0;
+        foreach ($groupX as $total_x => $_) {
+//            $sResult = [];
+            foreach ($groupY as $total_y => $_) {
+                $resS = User::query()
+                    ->where('total_x', $total_x)
+                    ->where('total_y', $total_y)
+                    ->count();
+                $XY[] = $resS * $total_x * $total_y;
+                if ($counter < 10) {
+                    $XY_formula[] = $resS . '\cdot' .  $total_x . '\cdot' . $total_y;
+                }
+                $counter++;
+            }
+//            $double[] = [strval($total_x), ...$sResult];
+        }
+        $XY = array_sum($XY) / $totalUsers;
+        $XY_formula = '(' . implode(' + ', $XY_formula) . ' + \dots) \cdot \frac{1}{' . $totalUsers . '}';
+        $KXY = round($XY - ($expectedValue['x']['result'] * $expectedValue['y']['result']), 4);
+        $rxy = round($KXY / ($expectedValue['x']['result5'] * $expectedValue['y']['result5']), 4);
+        $rxy_formula = '\frac{' . $KXY . '}{' . $expectedValue['x']['result5'] . ' \cdot ' . $expectedValue['y']['result5'] . '}';
 //        dd($graphic);
 
         return view('report', compact([
@@ -262,6 +286,11 @@ class ReportController extends Controller
             'bigTable',
             'double',
             'graphic',
+            'XY',
+            'XY_formula',
+            'KXY',
+            'rxy',
+            'rxy_formula'
         ]));
     }
 }

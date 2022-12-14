@@ -271,6 +271,7 @@ const chart4 = new LineChart(chartDiv4, {
 
 const chartDiv5 = document.querySelector('.chart_div_5');
 let series5 = JSON.parse(chartDiv5.dataset.data);
+const line = (y) => 2.2467 * y + 57.6724;
 
 const chart5 = new LineChart(chartDiv5, {
     // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
@@ -278,6 +279,9 @@ const chart5 = new LineChart(chartDiv5, {
     series: [{
         name: 'series-1',
         data: series5
+    }, {
+        name: 'series-2',
+        data: [{y: -10, x: line(-25)}, {y: 44, x: line(44)}]
     }]
 }, {
     axisX: {
@@ -294,10 +298,10 @@ const chart5 = new LineChart(chartDiv5, {
             lineSmooth: Interpolation.none(),
             // showArea: true,
         },
-        // 'series-2': {
-        //     lineSmooth: Interpolation.simple(),
+        'series-2': {
+            lineSmooth: Interpolation.none(),
             // showArea: true
-        // },
+        },
         // 'series-3': {
         //     showPoint: false
         // }

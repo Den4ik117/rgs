@@ -399,6 +399,18 @@ f(x) =
         </tbody>
     </table>
 
+    <p class="text-base mb-4 flex flex-col gap-2">
+        <span>$ \overline{XY} = {{ $XY_formula }} = {{ $XY }} $</span>
+        <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $XY }} - {{ $expectedValue['x']['result'] }} \cdot {{ $expectedValue['y']['result'] }} = {{ $KXY }} $</span>
+        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ $rxy_formula }} = {{ $rxy }} $</span>
+        <span>$ X - \overline{X} = r_{xy} \frac{S_x}{S_y}(Y - \overline{Y}) $</span>
+        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $rxy }} \frac{ {{ $expectedValue['x']['result5'] }} }{ {{ $expectedValue['y']['result5'] }} } (y - {{ $expectedValue['y']['result'] }}) $</span>
+        @php($constanta = round($rxy * ($expectedValue['x']['result5'] / $expectedValue['y']['result5']), 4))
+        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $constanta }} (y - {{ $expectedValue['y']['result'] }}) $</span>
+        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) }} + {{ $expectedValue['x']['result'] }} $</span>
+        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) + $expectedValue['x']['result'] }} $</span>
+    </p>
+
     <div class="chart_div_5" data-data="{{ json_encode($graphic) }}"></div>
 
 {{--    <div class="chart_div"></div>--}}
