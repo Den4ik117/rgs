@@ -269,6 +269,41 @@ const chart4 = new LineChart(chartDiv4, {
     }
 });
 
+const chartDiv5 = document.querySelector('.chart_div_5');
+let series5 = JSON.parse(chartDiv5.dataset.data);
+
+const chart5 = new LineChart(chartDiv5, {
+    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+    // Naming the series with the series object array notation
+    series: [{
+        name: 'series-1',
+        data: series5
+    }]
+}, {
+    axisX: {
+        type: AutoScaleAxis,
+        onlyInteger: true
+    },
+    fullWidth: true,
+    // Within the series options you can use the series names
+    // to specify configuration that will only be used for the
+    // specific series.
+    series: {
+        'series-1': {
+            // lineSmooth: Interpolation.cardinal(),
+            lineSmooth: Interpolation.none(),
+            // showArea: true,
+        },
+        // 'series-2': {
+        //     lineSmooth: Interpolation.simple(),
+            // showArea: true
+        // },
+        // 'series-3': {
+        //     showPoint: false
+        // }
+    }
+});
+
 
 // const fileInputs = document.querySelectorAll('input[type=file]');
 // const form = document.querySelector('form');

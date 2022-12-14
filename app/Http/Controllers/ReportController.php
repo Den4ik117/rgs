@@ -151,8 +151,117 @@ class ReportController extends Controller
             $expectedValue[$randomValue]['result5'] = round(sqrt($expectedValue[$randomValue]['result4']), 4);
             $intervals = $oldIntervals;
         }
-//        dd($expectedValue);
 
-        return view('report', compact(['users', 'totalUsers', 'chunkSize', 'usersSortedByX', 'usersSortedByY', 'intervals', 'intervals2', 'expectedValue', 'empiricalFunctionArray', 'empiricalFunctionArrayY']));
+        $h = 10;
+        $leftSpacing = $xMin->first()->total_x;
+        $rightSpacing = $leftSpacing + $h;
+        $x_B = $expectedValue['x']['result'];
+
+        $bigTable = ['x' => [], 'y' => []];
+        foreach (['x'] as $key) {
+            $t = [];
+            for ($i = 0; $i < $resultN; $i++) {
+                $resultSubTable = [];
+                $resultSubTable['id'] = $i + 1;
+                $resultSubTable['interval'] = $leftSpacing . ' ― ' . $rightSpacing;
+                $resultSubTable['ni'] = User::query()
+                    ->whereNotNull('total_x')
+                    ->whereNotNull('total_y')
+                    ->whereBetween('total_' . $key, [$leftSpacing + ($i === 0 ? 0 : 1), $rightSpacing])
+                    ->count();
+                $resultSubTable['pi'] = round(exp(-($leftSpacing) / ($x_B)) - exp(-($rightSpacing) / ($x_B)), 4);
+                $resultSubTable['n`i'] = round($totalUsers * $resultSubTable['pi']);
+                $resultSubTable['ni - n`i'] = $resultSubTable['ni'] - $resultSubTable['n`i'];
+                $resultSubTable['(ni - n`i)^2'] = pow($resultSubTable['ni - n`i'],2);
+                $resultSubTable['(ni - n`i)^2/n`i'] = round($resultSubTable['(ni - n`i)^2'] / $resultSubTable['n`i'], 4);
+
+                $leftSpacing += $h;
+                $rightSpacing += $h;
+                $t[] = $resultSubTable;
+            }
+            $bigTable[$key] = $t;
+            $bigTable['x_n'] = collect($t)->sum('ni');
+            $bigTable['x_chi'] = collect($t)->sum('(ni - n`i)^2/n`i');
+        }
+
+        $double = [];
+//        $doubleUsers = User::query()
+//            ->whereNotNull('total_x')
+//            ->whereNotNull('total_y');
+        $groupX = User::query()
+            ->whereNotNull('total_x')
+            ->whereNotNull('total_y')
+            ->get()
+            ->groupBy('total_x')
+            ->sortKeys();
+        $groupY = User::query()
+            ->whereNotNull('total_x')
+            ->whereNotNull('total_y')
+            ->get()
+            ->groupBy('total_y')
+            ->sortKeys();
+
+        $double[] = ['X|Y', ...$groupY->keys()->map('strval')];
+        foreach ($groupX as $total_x => $usersX) {
+            $sResult = [];
+            foreach ($groupY as $total_y => $usersY) {
+                $resS = User::query()
+                    ->where('total_x', $total_x)
+                    ->where('total_y', $total_y)
+                    ->count();
+                $sResult[] = $resS;
+            }
+            $double[] = [strval($total_x), ...$sResult];
+        }
+
+        $graphic = [];
+        $sResult = [];
+        foreach ($groupY as $total_y => $usersX) {
+//            foreach ($groupY as $total_y => $usersY) {
+                $sResult[] = User::query()
+                    ->where('total_y', $total_y)
+                    ->whereNotNull('total_x')
+                    ->count();
+//                $sResult[] = $resS;
+//            }
+//            $double[] = [strval($total_x), ...$sResult];
+        }
+        $double[] = ['$n_y$', ...$sResult];
+
+        $sResult = [];
+        foreach ($groupY as $total_y => $usersX) {
+            $sResult2 = [];
+            foreach ($groupX as $total_x => $usersY) {
+                $resS = User::query()
+                    ->where('total_x', $total_x)
+                    ->where('total_y', $total_y)
+                    ->count();
+                $sResult2[] = $resS * $total_x;
+            }
+            $c = User::query()
+                ->where('total_y', $total_y)
+                ->whereNotNull('total_x')
+                ->count();
+            $sResult[] = round(array_sum($sResult2) / $c, 2);
+            $graphic[] = ['x' => round(array_sum($sResult2) / $c, 2), 'y' => $total_y];
+        }
+        $double[] = ['$\overline{x}_{y=y_i}$', ...$sResult];
+//        dd($graphic);
+
+        return view('report', compact([
+            'users',
+            'totalUsers',
+            'chunkSize',
+            'usersSortedByX',
+            'usersSortedByY',
+            'intervals',
+            'intervals2',
+            'expectedValue',
+            'empiricalFunctionArray',
+            'empiricalFunctionArrayY',
+            'bigTable',
+            'double',
+            'graphic',
+        ]));
     }
 }

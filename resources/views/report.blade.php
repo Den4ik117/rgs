@@ -220,6 +220,89 @@
 
     <div class="chart_div_3" data-data="{{ collect($empiricalFunctionArray)->toJson() }}"></div>
 
+    <h3 class="text-lg mb-4">Проверка критерия Пирсона</h3>
+
+    <p class="text-base mb-4">
+        Установим уровень значимости $ \alpha $, при котором распределение для выборки согласуется с <strong>показательным законом</strong> распределения по критерию Пирсона ($ \chi^2 $).
+        Возьмём готовые формулы, которые мы получили на практиках.
+        Функция плотности для показательного распределения:
+    </p>
+
+    <p class="text-base mb-4 flex flex-col gap-2">
+        <span>$$
+f(x) =
+  \begin{cases}
+    0       & \quad x < 0\\
+    \lambda e^{-\lambda x}  & \quad x \geq 0
+  \end{cases}
+
+        $$</span>
+        <span>$ p_i(x \in (x_{i-1}; x_i)) = e^{-\frac{x_{i-1}}{\overline{x_в}}} - e^{-\frac{x_{i}}{\overline{x_в}}} $</span>
+        <span>Выдвинем гипотезу: $ H_0: X \sim P(\lambda) $</span>
+        <span>Выдвинем противоположную гипотезу: $ H_1: X - \mathrm{имеет \, отличное \, от \, показательного \, распределение} $</span>
+    </p>
+
+    <table class="w-full mb-4">
+        <thead>
+        <tr>
+            <th class="border px-6 py-4 text-center">$ № $</th>
+            <th class="border px-6 py-4 text-center">$ x_{i-1} - x_i $</th>
+            <th class="border px-6 py-4 text-center">$ n_i $</th>
+            <th class="border px-6 py-4 text-center">$ p_i $</th>
+            <th class="border px-6 py-4 text-center">$ n'_i = p_i N $</th>
+            <th class="border px-6 py-4 text-center">$ n_i - n'_i $</th>
+            <th class="border px-6 py-4 text-center">$ (n_i - n'_i)^2 $</th>
+            <th class="border px-6 py-4 text-center">$ \frac{(n_i - n'_i)^2}{n'_i} $</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($bigTable['x'] as $interval)
+            <tr>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['id'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['ni'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['pi'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['n`i'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['ni - n`i'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2/n`i'] }} $</td>
+            </tr>
+        @endforeach
+        </tbody>
+        <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="border px-6 py-4 text-center">$ {{ $bigTable['x_n'] }} $</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="border px-6 py-4 text-center">$ \chi^2_{набл} = {{ $bigTable['x_chi'] }} $</td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <p class="text-base mb-4 flex flex-col gap-2">
+        <span>Число степеней свободы: $ r = k - m - 1 = 10 - 1 - 1 = 8 $</span>
+        <span>$ \chi^2_{крит} = 13.362; \; при \, \alpha = 0.100$</span>
+        <span>$ \chi^2_{крит} = 15.507; \; при \, \alpha = 0.050$</span>
+        <span>$ \chi^2_{крит} = 17.535; \; при \, \alpha = 0.025$</span>
+        <span>$ \chi^2_{крит} = 18.168; \; при \, \alpha = 0.020$</span>
+        <span>$ \chi^2_{крит} = 20.090; \; при \, \alpha = 0.010$</span>
+        <span>$ \chi^2_{крит} = 21.955; \; при \, \alpha = 0.005$</span>
+        <span>$ \chi^2_{крит} = 26.124; \; при \, \alpha = 0.001$</span>
+    </p>
+
+    <p class="text-base mb-4">
+        Вывод: ни при каком уровне значимости $ \alpha $ распределение $ X $ не подчиняется показательному распределению.
+        Почему так происходит? Из графика полигона частот мы можем предположить, что наиболее подходящее распределение ― показательное распределение.
+        Так как график плавно убывает, что очень напоминает убывающую показательную функцию.
+        Но гипотеза $ H_0 $ не подтверждается.
+        Из таблицы мы видим, что у нас <strong>очень</strong> тяжёлые концы, которы и составляют большую часть $ \chi^2_{набл} $.
+        А интервалы под номерами 6, 7, 8 и 9 практически не накапливают ошибку ― идут почти вровень с показательными распределением.
+    </p>
+
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ Y $.</h3>
 
     <p class="text-base mb-4 flex flex-col gap-2">
@@ -301,6 +384,22 @@
     <h3 class="text-lg mb-4">Кумулята:</h3>
 
     <div class="chart_div_4" data-data="{{ collect($empiricalFunctionArrayY)->toJson() }}"></div>
+
+    <h2 class="text-xl mb-4">Двумерная выборка:</h2>
+
+    <table class="w-full mb-4">
+        <tbody class="text-xs">
+        @foreach($double as $values)
+            <tr class="first-of-type:font-bold">
+                @foreach($values as $value)
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $value === 0 ? '' : $value }}</td>
+                @endforeach
+            </tr>
+        @endforeach
+        </tbody>
+    </table>
+
+    <div class="chart_div_5" data-data="{{ json_encode($graphic) }}"></div>
 
 {{--    <div class="chart_div"></div>--}}
 {{--    {{ dd($intervals) }}--}}
