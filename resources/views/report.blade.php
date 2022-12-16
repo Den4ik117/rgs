@@ -387,31 +387,73 @@ f(x) =
 
     <h2 class="text-xl mb-4">Двумерная выборка:</h2>
 
+{{--    <table class="w-full mb-4">--}}
+{{--        <tbody class="text-xs">--}}
+{{--        @foreach($double as $values)--}}
+{{--            <tr class="first-of-type:font-bold">--}}
+{{--                @foreach($values as $value)--}}
+{{--                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $value === 0 ? '' : $value }}</td>--}}
+{{--                @endforeach--}}
+{{--            </tr>--}}
+{{--        @endforeach--}}
+{{--        </tbody>--}}
+{{--    </table>--}}
+
     <table class="w-full mb-4">
         <tbody class="text-xs">
-        @foreach($double as $values)
+        @foreach($doubleXY['y'] as $total_y => $y_values)
+            @if ($loop->first)
+                <tr class="first-of-type:font-bold">
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ 'Y | X' }}</td>
+                    @foreach($doubleXY['x'] as $total_x => $x_values)
+                        <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $total_x }}</td>
+                    @endforeach
+                </tr>
+            @endif
+
             <tr class="first-of-type:font-bold">
-                @foreach($values as $value)
-                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $value === 0 ? '' : $value }}</td>
+                <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $total_y }}</td>
+                @foreach($doubleXY['x'] as $total_x => $x_values)
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $doubleXY['values'][$total_x . ' ' . $total_y] }}</td>
                 @endforeach
             </tr>
+
+            @if ($loop->last)
+                <tr class="first-of-type:font-bold">
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">$ n_x $</td>
+                    @foreach($doubleXY['nx'] as $nx)
+                        <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $nx }}</td>
+                    @endforeach
+                </tr>
+                <tr class="first-of-type:font-bold">
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">$ y_{x = x_i} $</td>
+                    @foreach($doubleXY['yx'] as $yx)
+                        <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $yx }}</td>
+                    @endforeach
+                </tr>
+            @endif
         @endforeach
         </tbody>
     </table>
 
     <p class="text-base mb-4 flex flex-col gap-2">
-        <span>$ \overline{XY} = {{ $XY_formula }} = {{ $XY }} $</span>
-        <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $XY }} - {{ $expectedValue['x']['result'] }} \cdot {{ $expectedValue['y']['result'] }} = {{ $KXY }} $</span>
-        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ $rxy_formula }} = {{ $rxy }} $</span>
-        <span>$ X - \overline{X} = r_{xy} \frac{S_x}{S_y}(Y - \overline{Y}) $</span>
-        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $rxy }} \frac{ {{ $expectedValue['x']['result5'] }} }{ {{ $expectedValue['y']['result5'] }} } (y - {{ $expectedValue['y']['result'] }}) $</span>
-        @php($constanta = round($rxy * ($expectedValue['x']['result5'] / $expectedValue['y']['result5']), 4))
-        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $constanta }} (y - {{ $expectedValue['y']['result'] }}) $</span>
-        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) }} + {{ $expectedValue['x']['result'] }} $</span>
-        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) + $expectedValue['x']['result'] }} $</span>
+        @foreach($doubleXY['$yx'] as $yx)
+            <span>$ y_{x = {{ $yx['key'] }} } = {{ $yx['value'] }} = {{ $doubleXY['yx'][$loop->index] }} $</span>
+        @endforeach
+        <span>$ \overline{XY} = {{ $doubleXY['$XY'] }} = {{ $doubleXY['XY'] }} $</span>
+        <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $doubleXY['XY'] }} - {{ $expectedValue['x']['result'] }} \cdot {{ $expectedValue['y']['result'] }} = {{ $doubleXY['KXY'] }} $</span>
+        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $doubleXY['KXY'] . '}{' . $expectedValue['x']['result5'] . ' \cdot ' . $expectedValue['y']['result5'] . '}' }} = {{ $doubleXY['rxy'] }} $</span>
+        <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
+        <span>$ y - {{ $expectedValue['y']['result'] }} = {{ $doubleXY['rxy'] }} \frac{ {{ $expectedValue['y']['result5'] }} }{ {{ $expectedValue['x']['result5'] }} } (x - {{ $expectedValue['x']['result'] }}) $</span>
+        <span>$ y = 0.2857 x  + 2.6486 $</span>
+{{--        @php($constanta = round($rxy * ($expectedValue['x']['result5'] / $expectedValue['y']['result5']), 4))--}}
+{{--        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $constanta }} (y - {{ $expectedValue['y']['result'] }}) $</span>--}}
+{{--        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) }} + {{ $expectedValue['x']['result'] }} $</span>--}}
+{{--        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) + $expectedValue['x']['result'] }} $</span>--}}
     </p>
 
-    <div class="chart_div_5" data-data="{{ json_encode($graphic) }}"></div>
+{{--    <div class="chart_div_5" data-data="{{ json_encode($graphic) }}"></div>--}}
+    <div class="chart_div_5" data-data="{{ json_encode($doubleXY['points']) }}"></div>
 
 {{--    <div class="chart_div"></div>--}}
 {{--    {{ dd($intervals) }}--}}

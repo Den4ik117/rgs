@@ -214,8 +214,8 @@ const chart3 = new LineChart(chartDiv3, {
     series: {
         'series-1': {
             // lineSmooth: Interpolation.cardinal(),
-            lineSmooth: Interpolation.none(),
-            showArea: true,
+            lineSmooth: Interpolation.step(),
+            // showArea: true,
         },
         // 'series-2': {
         //     lineSmooth: Interpolation.simple(),
@@ -233,9 +233,9 @@ series4 = [{
     x: 0, y: 0
 }, ...series4.slice(1, series4.length - 1), {
     x: series4.slice(1, series4.length - 1).pop().x + 10, y: 1
-}, {
+}/*, {
     x: series4.slice(1, series4.length - 1).pop().x + 10 * 2, y: 1
-}];
+}*/];
 
 const chart4 = new LineChart(chartDiv4, {
     // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
@@ -256,8 +256,8 @@ const chart4 = new LineChart(chartDiv4, {
     series: {
         'series-1': {
             // lineSmooth: Interpolation.cardinal(),
-            lineSmooth: Interpolation.none(),
-            showArea: true,
+            lineSmooth: Interpolation.step(),
+            // showArea: true,
         },
         // 'series-2': {
         //     lineSmooth: Interpolation.simple(),
@@ -271,7 +271,7 @@ const chart4 = new LineChart(chartDiv4, {
 
 const chartDiv5 = document.querySelector('.chart_div_5');
 let series5 = JSON.parse(chartDiv5.dataset.data);
-const line = (y) => 2.2467 * y + 57.6724;
+const line = (x) => 0.2857 * x + 2.6486;
 
 const chart5 = new LineChart(chartDiv5, {
     // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
@@ -281,7 +281,7 @@ const chart5 = new LineChart(chartDiv5, {
         data: series5
     }, {
         name: 'series-2',
-        data: [{y: -10, x: line(-25)}, {y: 44, x: line(44)}]
+        data: [{x: 0, y: line(0)}, {x: 100, y: line(100)}]
     }]
 }, {
     axisX: {

@@ -37,50 +37,50 @@
     <tbody>
         <tr>
             <td>составить вариационный ряд</td>
-            <td style="text-align: center;">+</td>
-            <td style="text-align: center;">+</td>
+            <td>+</td>
+            <td>+</td>
         </tr>
         <tr>
             <td>построить полигон и гистограмму частот</td>
-            <td style="text-align: center;">+</td>
-            <td style="text-align: center;">+</td>
+            <td>+</td>
+            <td>+</td>
         </tr>
         <tr>
             <td>найти эмпирическую функцию распределения и построить ее график</td>
-            <td style="text-align: center;">+</td>
-            <td style="text-align: center;">+</td>
+            <td>+</td>
+            <td>+</td>
         </tr>
         <tr>
             <td>рассчитать выборочную среднюю и выборочную дисперсию, среднее квадратичное отклонение, асимметрию, эксцесс</td>
-            <td style="text-align: center;">+</td>
-            <td style="text-align: center;">+</td>
+            <td>+</td>
+            <td>+</td>
         </tr>
         <tr>
             <td>определить доверительный интервал для оценки математического ожидания при надежности 0,95</td>
-            <td style="text-align: center;"></td>
-            <td style="text-align: center;"></td>
+            <td>-</td>
+            <td>-</td>
         </tr>
         <tr>
-            <td>установить уровень значимости, при котором распределение для выборки согласуется с нормальным законом(или более подходящим, судя по полигону частот, распределением)по критерию Пирсона</td>
-            <td style="text-align: center;">+</td>
-            <td style="text-align: center;">+</td>
+            <td>установить уровень значимости, при котором распределение для выборки согласуется с нормальным законом (или более подходящим, судя по полигону частот, распределением) по критерию Пирсона</td>
+            <td>+</td>
+            <td>-</td>
         </tr>
         <tr>
             <td>проверить по критерию Пирсона, согласуется ли распределение с распределением Коши</td>
-            <td style="text-align: center;">-</td>
-            <td style="text-align: center;">-</td>
+            <td>-</td>
+            <td>-</td>
         </tr>
         <tr>
             <td>определить первые начальные и вторые центральные моменты</td>
-            <td colspan="2" style="text-align: center;"></td>
+            <td>+</td>
         </tr>
         <tr>
             <td>построить эмпирическую линию регрессии</td>
-            <td colspan="2" style="text-align: center;">+</td>
+            <td colspan="2">+</td>
         </tr>
         <tr>
             <td>найти уравнение теоретической линии регрессии Y по X или X по Y, обе линии построить в одной системе координат</td>
-            <td colspan="2" style="text-align: center;">+</td>
+            <td colspan="2">+</td>
         </tr>
     </tbody>
 </table>

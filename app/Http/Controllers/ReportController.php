@@ -201,6 +201,7 @@ class ReportController extends Controller
             ->groupBy('total_y')
             ->sortKeys();
 
+        /*
         $double[] = ['X|Y', ...$groupY->keys()->map('strval')];
         foreach ($groupX as $total_x => $usersX) {
             $sResult = [];
@@ -270,7 +271,73 @@ class ReportController extends Controller
         $KXY = round($XY - ($expectedValue['x']['result'] * $expectedValue['y']['result']), 4);
         $rxy = round($KXY / ($expectedValue['x']['result5'] * $expectedValue['y']['result5']), 4);
         $rxy_formula = '\frac{' . $KXY . '}{' . $expectedValue['x']['result5'] . ' \cdot ' . $expectedValue['y']['result5'] . '}';
-//        dd($graphic);
+        */
+
+        $doubleXY = [
+            'x' => [
+                '5' => [0, 10],
+                '15' => [11, 20],
+                '25' => [21, 30],
+                '35' => [31, 40],
+                '45' => [41, 50],
+                '55' => [51, 60],
+                '65' => [61, 70],
+                '75' => [71, 80],
+                '85' => [81, 90],
+                '95' => [91, 100],
+            ],
+            'y' => [
+                '2.2' => [0, 4.4],
+                '6.6' => [5, 8.8],
+                '11' => [9, 13.2],
+                '15.4' => [14, 17.6],
+                '19.8' => [18, 22],
+                '24.2' => [23, 26.4],
+                '28.6' => [27, 30.8],
+                '33' => [31, 35.2],
+                '37.4' => [36, 39.6],
+                '41.8' => [40, 44],
+            ],
+            'values' => [],
+            'nx' => [],
+            'intermediate' => [],
+            'yx' => [],
+            'points' => [],
+            'XY' => [],
+            '$XY' => []
+        ];
+        $i = 0;
+        foreach ($doubleXY['x'] as $total_x => $x_between) {
+            foreach ($doubleXY['y'] as $total_y => $y_between) {
+                $countUsers = User::query()
+                    ->whereBetween('total_x', $x_between)
+                    ->whereBetween('total_y', $y_between)
+                    ->count();
+                $doubleXY['values'][$total_x . ' ' . $total_y] = $countUsers;
+                $doubleXY['intermediate'][] = $countUsers * floatval($total_y);
+                $doubleXY['$intermediate'][] = $countUsers . '\cdot' . $total_y;
+                $doubleXY['XY'][] = floatval($total_x) * floatval($total_y) * $countUsers;
+                if ($i < 8) {
+                    $doubleXY['$XY'][] = $total_x . '\cdot' . $total_y . '\cdot' . $countUsers;
+                }
+                $i++;
+            }
+            $nx = User::query()
+                ->whereBetween('total_x', $x_between)
+                ->whereNotNull('total_y')
+                ->count();
+            $doubleXY['nx'][] = $nx;
+            $doubleXY['yx'][] = round((array_sum($doubleXY['intermediate'])) / $nx, 4);
+            $doubleXY['$yx'][] = ['key' => $total_x, 'value' => '(' . implode('+', $doubleXY['$intermediate']) . ') \frac{1}{' . $nx . '}'];
+            $doubleXY['points'][] = ['x' => $total_x, 'y' => end($doubleXY['yx'])];
+            $doubleXY['intermediate'] = [];
+            $doubleXY['$intermediate'] = [];
+        }
+        $doubleXY['XY'] = round(array_sum($doubleXY['XY']) / $totalUsers, 4);
+        $doubleXY['$XY'] = '(' . implode('+', $doubleXY['$XY']) . ' + \dots) \frac{1}{' . $totalUsers . '}';
+        $doubleXY['KXY'] = round($doubleXY['XY'] - $expectedValue['x']['result'] * $expectedValue['y']['result'], 4);
+        $doubleXY['rxy'] = round($doubleXY['KXY'] / ($expectedValue['x']['result5'] * $expectedValue['y']['result5']), 4);
+//        dd($doubleXY, array_sum($doubleXY['values']));
 
         return view('report', compact([
             'users',
@@ -285,12 +352,13 @@ class ReportController extends Controller
             'empiricalFunctionArrayY',
             'bigTable',
             'double',
-            'graphic',
-            'XY',
-            'XY_formula',
-            'KXY',
-            'rxy',
-            'rxy_formula'
+//            'graphic',
+//            'XY',
+//            'XY_formula',
+//            'KXY',
+//            'rxy',
+//            'rxy_formula',
+            'doubleXY'
         ]));
     }
 }
