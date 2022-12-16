@@ -2,9 +2,9 @@
 import { LineChart, Interpolation, BarChart, AutoScaleAxis } from 'chartist';
 import 'chartist/dist/index.css';
 
-import.meta.glob([
-    '../images/**',
-]);
+// import.meta.glob([
+//     '../images/**',
+// ]);
 
 /*new BarChart('.chart_div', {
 
@@ -115,7 +115,7 @@ for (let i = 0; i < middles2.length; i++) {
 }
 
 const points4 = [];
-for (let i = 0, j = 0; i < series2.length; i++, j += 4.4) {
+for (let i = 0, j = 0; i < series2.length; i++, j += 4) {
     points4.push({
         x: j,
         y: series2[i]
@@ -271,7 +271,8 @@ const chart4 = new LineChart(chartDiv4, {
 
 const chartDiv5 = document.querySelector('.chart_div_5');
 let series5 = JSON.parse(chartDiv5.dataset.data);
-const line = (x) => 0.2857 * x + 2.6486;
+// const line = (x) => 0.2857 * x + 2.6486;
+const line = (x) => 0.1971 * x  + 8.1991;
 
 const chart5 = new LineChart(chartDiv5, {
     // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
@@ -307,24 +308,3 @@ const chart5 = new LineChart(chartDiv5, {
         // }
     }
 });
-
-
-// const fileInputs = document.querySelectorAll('input[type=file]');
-// const form = document.querySelector('form');
-//
-// if (fileInputs && form) {
-//     fileInputs.forEach((fileInput) => {
-//         fileInput.addEventListener('change', (e) => {
-//             const formData = new FormData();
-//             formData.append(`${e.target.id}`, e.target.files[0]);
-//
-//             axios.post(form.action, formData)
-//                 .then(response => {
-//                     console.log(response)
-//                 })
-//                 .catch(e => {
-//                     console.log(e);
-//                 });
-//         });
-//     });
-// }

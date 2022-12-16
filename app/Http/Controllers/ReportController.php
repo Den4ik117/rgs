@@ -17,7 +17,7 @@ class ReportController extends Controller
 
         $totalUsers = $users->count();
 
-        $chunkSize = 6;
+        $chunkSize = 9;
 
         $usersSortedByX = $users->groupBy('total_x')->sortKeys()->values();
         $usersSortedByY = $users->groupBy('total_y')->sortKeys()->values();
@@ -53,10 +53,12 @@ class ReportController extends Controller
             $rightSpacing += $h;
         }
         $empiricalFunctionArray[] = [$leftSpacing, PHP_INT_MAX];
-        $empiricalFunctionArray = array_map(function ($intervals) use ($totalUsers) {
-            $result = User::query()
+        $empiricalFunctionArray = array_map(function ($intervals) use ($totalUsers, $users) {
+            $result = /*User::query()
                     ->whereNotNull('total_x')
-                    ->whereNotNull('total_y')
+                    ->whereNotNull('total_y')*/
+
+                    $users
                     ->where('total_x', '<', $intervals[1])
                     ->count() / $totalUsers;
             return [
@@ -76,7 +78,8 @@ class ReportController extends Controller
         $yMin = $usersSortedByY->first();
         $yMax = $usersSortedByY->last();
         $n = 1 + 3.22 * (log($totalUsers) / log(10));
-        $resultN = ceil($n);
+//        $resultN = ceil($n);
+        $resultN = 11;
         $h = ($yMax->first()->total_y - $yMin->first()->total_y) / $resultN;
         $leftSpacing = $yMin->first()->total_y;
         $rightSpacing = $leftSpacing + $h;
@@ -149,6 +152,24 @@ class ReportController extends Controller
 
             $expectedValue[$randomValue]['formula5'] = '\sqrt{' . $expectedValue[$randomValue]['result4'] . '}';
             $expectedValue[$randomValue]['result5'] = round(sqrt($expectedValue[$randomValue]['result4']), 4);
+
+            $formula = [];
+//            foreach ($intervals as $interval) {
+            for ($i = 0; $i < 4; $i++) {
+                $formula[] = '(' . $intervals[$i]['middle'] . ' - ' . $expectedValue[$randomValue]['result'] . ')^3' . ' \cdot' . $intervals[$i]['frequency'];
+            }
+            $expectedValue[$randomValue]['formula6'] = '\frac{' . implode('+', $formula) . ' + \dots}{' . $expectedValue[$randomValue]['result5'] . '^3}';
+            $expectedValue[$randomValue]['result6'] = round(collect($intervals)->map(fn ($inter) => pow($inter['middle'] - $expectedValue[$randomValue]['result'], 3) * $inter['frequency'])->sum() / pow($expectedValue[$randomValue]['result5'], 3), 4);
+
+            $formula = [];
+//            foreach ($intervals as $interval) {
+                for ($i = 0; $i < 4; $i++) {
+                $formula[] = '(' . $intervals[$i]['middle'] . ' - ' . $expectedValue[$randomValue]['result'] . ')^4' . ' \cdot' . $intervals[$i]['frequency'];
+            }
+            $expectedValue[$randomValue]['formula7'] = '\frac{' . implode('+', $formula) . ' + \dots}{' . $expectedValue[$randomValue]['result5'] . '^4} - 3';
+            $expectedValue[$randomValue]['result7'] = round(collect($intervals)->map(fn ($inter) => pow($inter['middle'] - $expectedValue[$randomValue]['result'], 4) * $inter['frequency'])->sum() / pow($expectedValue[$randomValue]['result5'], 4) - 3, 4);
+//            dd(collect($intervals)->sum('frequency'));
+
             $intervals = $oldIntervals;
         }
 
@@ -160,7 +181,7 @@ class ReportController extends Controller
         $bigTable = ['x' => [], 'y' => []];
         foreach (['x'] as $key) {
             $t = [];
-            for ($i = 0; $i < $resultN; $i++) {
+            for ($i = 0; $i < 10; $i++) {
                 $resultSubTable = [];
                 $resultSubTable['id'] = $i + 1;
                 $resultSubTable['interval'] = $leftSpacing . ' ― ' . $rightSpacing;
@@ -183,7 +204,7 @@ class ReportController extends Controller
             $bigTable['x_n'] = collect($t)->sum('ni');
             $bigTable['x_chi'] = collect($t)->sum('(ni - n`i)^2/n`i');
         }
-
+/*
         $double = [];
 //        $doubleUsers = User::query()
 //            ->whereNotNull('total_x')
@@ -201,7 +222,7 @@ class ReportController extends Controller
             ->groupBy('total_y')
             ->sortKeys();
 
-        /*
+
         $double[] = ['X|Y', ...$groupY->keys()->map('strval')];
         foreach ($groupX as $total_x => $usersX) {
             $sResult = [];
@@ -275,28 +296,29 @@ class ReportController extends Controller
 
         $doubleXY = [
             'x' => [
-                '5' => [0, 10],
-                '15' => [11, 20],
-                '25' => [21, 30],
-                '35' => [31, 40],
-                '45' => [41, 50],
-                '55' => [51, 60],
-                '65' => [61, 70],
-                '75' => [71, 80],
-                '85' => [81, 90],
-                '95' => [91, 100],
+                5 => [0, 10],
+                15 => [11, 20],
+                25 => [21, 30],
+                35 => [31, 40],
+                45 => [41, 50],
+                55 => [51, 60],
+                65 => [61, 70],
+                75 => [71, 80],
+                85 => [81, 90],
+                95 => [91, 100],
             ],
             'y' => [
-                '2.2' => [0, 4.4],
-                '6.6' => [5, 8.8],
-                '11' => [9, 13.2],
-                '15.4' => [14, 17.6],
-                '19.8' => [18, 22],
-                '24.2' => [23, 26.4],
-                '28.6' => [27, 30.8],
-                '33' => [31, 35.2],
-                '37.4' => [36, 39.6],
-                '41.8' => [40, 44],
+                2 => [0, 4],
+                6 => [5, 8],
+                10 => [9, 12],
+                14 => [13, 16],
+                18 => [17, 20],
+                22 => [21, 24],
+                26 => [25, 28],
+                30 => [29, 32],
+                34 => [33, 36],
+                38 => [37, 40],
+                42 => [41, 44],
             ],
             'values' => [],
             'nx' => [],
@@ -314,9 +336,9 @@ class ReportController extends Controller
                     ->whereBetween('total_y', $y_between)
                     ->count();
                 $doubleXY['values'][$total_x . ' ' . $total_y] = $countUsers;
-                $doubleXY['intermediate'][] = $countUsers * floatval($total_y);
+                $doubleXY['intermediate'][] = $countUsers * $total_y;
                 $doubleXY['$intermediate'][] = $countUsers . '\cdot' . $total_y;
-                $doubleXY['XY'][] = floatval($total_x) * floatval($total_y) * $countUsers;
+                $doubleXY['XY'][] = $total_x * $total_y * $countUsers;
                 if ($i < 8) {
                     $doubleXY['$XY'][] = $total_x . '\cdot' . $total_y . '\cdot' . $countUsers;
                 }
@@ -351,7 +373,7 @@ class ReportController extends Controller
             'empiricalFunctionArray',
             'empiricalFunctionArrayY',
             'bigTable',
-            'double',
+//            'double',
 //            'graphic',
 //            'XY',
 //            'XY_formula',

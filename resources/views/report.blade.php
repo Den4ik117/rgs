@@ -94,12 +94,12 @@
         </ul>
     </div>
 
-    <table class="w-full mb-8" style="page-break-after: always;">
+    <table class="w-full mb-8 text-xs" style="page-break-after: always;">
         <thead>
         <tr>
             @for($i = 0; $i < $chunkSize; $i++)
-                <th class="border px-6 py-4 text-center border-l-2 border-t-2 border-b-2 border-gray-300">$ X $</th>
-                <th class="border px-6 py-4 text-center border-r-2 border-t-2 border-b-2 border-gray-300">$ Y $</th>
+                <th class="border px-1 py-1 text-center border-l-2 border-t-2 border-b-2 border-gray-300">$ X $</th>
+                <th class="border px-1 py-1 text-center border-r-2 border-t-2 border-b-2 border-gray-300">$ Y $</th>
             @endfor
         </tr>
         </thead>
@@ -107,13 +107,13 @@
         @foreach($users->chunk($chunkSize) as $chunk)
             <tr>
                 @foreach($chunk as $user)
-                    <td class="border px-6 py-4 text-center border-l-2 border-gray-300">{{ $user->total_x }}</td>
-                    <td class="border px-6 py-4 text-center border-r-2 border-gray-300">{{ $user->total_y }}</td>
+                    <td class="border px-1 py-1 text-center border-l-2 border-gray-300">{{ $user->total_x }}</td>
+                    <td class="border px-1 py-1 text-center border-r-2 border-gray-300">{{ $user->total_y }}</td>
                 @endforeach
                 @if ($loop->last)
                     @for ($i = 0; $i < ($chunkSize - $totalUsers % $chunkSize); $i++)
-                        <td class="border px-6 py-4 text-center border-l-2 border-gray-300"></td>
-                        <td class="border px-6 py-4 text-center border-r-2 border-gray-300"></td>
+                        <td class="border px-1 py-1 text-center border-l-2 border-gray-300"></td>
+                        <td class="border px-1 py-1 text-center border-r-2 border-gray-300"></td>
                     @endfor
                 @endif
             </tr>
@@ -121,7 +121,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <td class="border px-6 py-4 text-center border-x-2 border-y-2 border-gray-300" colspan="100%">
+            <td class="border px-1 py-1 text-center border-x-2 border-y-2 border-gray-300" colspan="100%">
                 $ N = {{ $totalUsers }} $
             </td>
         </tr>
@@ -169,6 +169,13 @@
                     <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>
                 </tr>
             @endforeach
+
+            <tr>
+                <td class=""></td>
+                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals)->sum('count') }} $</td>
+                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals)->sum('frequency') }} $</td>
+                <td class=""></td>
+            </tr>
         </tbody>
     </table>
 
@@ -183,8 +190,8 @@
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['x']['formula3'] }} = {{ $expectedValue['x']['result3'] }} $</span>
         <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['x']['formula4'] }} = {{ $expectedValue['x']['result4'] }} $</span>
         <span>$ S = \sqrt{S^2} = {{ $expectedValue['x']['formula5'] }} = {{ $expectedValue['x']['result5'] }} $</span>
-        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = \mathrm{много} - \mathrm{коэффициент \, асимметрии} $</span>
-        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = \mathrm{много} - \mathrm{коэффициент \, эксцесса}$</span>
+        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $expectedValue['x']['formula6'] }} = {{ $expectedValue['x']['result6'] }} - \mathrm{коэффициент \, асимметрии} $</span>
+        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['x']['formula7'] }} = {{ $expectedValue['x']['result7'] }} - \mathrm{коэффициент \, эксцесса}$</span>
     </p>
 
     <p class="text-base mb-4">
@@ -312,7 +319,8 @@ f(x) =
             $yMax = $usersSortedByY->pop();
             $n = 1 + 3.22 * (log($totalUsers) / log(10));
 //            $resultN = (floor($n) % 2 === 0) ? ceil($n) : floor($n);
-            $resultN = ceil($n);
+//            $resultN = ceil($n);
+            $resultN = 11;
             $h = ($yMax->first()->total_y - $yMin->first()->total_y) / $resultN;
         @endphp
         <span>$ y_{min} = {{ $yMin->first()->total_y }} \, ({{ $usersSortedByY->shift()->first()->total_y }}); \; m = {{ $yMin->count() }} $</span>
@@ -334,20 +342,27 @@ f(x) =
         </tr>
         </thead>
         <tbody>
-        @foreach($intervals2 as $interval)
+            @foreach($intervals2 as $interval)
+                <tr>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>
+                </tr>
+            @endforeach
+
             <tr>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>
+                <td class=""></td>
+                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals2)->sum('count') }} $</td>
+                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals2)->sum('frequency') }} $</td>
+                <td class=""></td>
             </tr>
-        @endforeach
         </tbody>
     </table>
 
     <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
-    <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals2)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals2)->pluck('middle')->toJson() }}" data-labels="[0, 44, 4.4]"></div>
+    <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals2)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals2)->pluck('middle')->toJson() }}" data-labels="[0, 44, 4]"></div>
 
     <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
@@ -356,8 +371,8 @@ f(x) =
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['y']['formula3'] }} = {{ $expectedValue['y']['result3'] }} $</span>
         <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['y']['formula4'] }} = {{ $expectedValue['y']['result4'] }} $</span>
         <span>$ S = \sqrt{S^2} = {{ $expectedValue['y']['formula5'] }} = {{ $expectedValue['y']['result5'] }} $</span>
-        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^3 \omega_i}}{S^3} = \mathrm{много} - \mathrm{коэффициент \, асимметрии} $</span>
-        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^4 \omega_i}}{S^4} - 3 = \mathrm{много} - \mathrm{коэффициент \, эксцесса}$</span>
+        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^3 \omega_i}}{S^3} = {{ $expectedValue['y']['formula6'] }} = {{ $expectedValue['y']['result6'] }} - \mathrm{коэффициент \, асимметрии} $</span>
+        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['y']['formula7'] }} = {{ $expectedValue['y']['result7'] }} - \mathrm{коэффициент \, эксцесса}$</span>
     </p>
 
     <h3 class="text-lg mb-4">Найдём эмпирическую функцию распределения и построим ее график.</h3>
@@ -445,7 +460,7 @@ f(x) =
         <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $doubleXY['KXY'] . '}{' . $expectedValue['x']['result5'] . ' \cdot ' . $expectedValue['y']['result5'] . '}' }} = {{ $doubleXY['rxy'] }} $</span>
         <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
         <span>$ y - {{ $expectedValue['y']['result'] }} = {{ $doubleXY['rxy'] }} \frac{ {{ $expectedValue['y']['result5'] }} }{ {{ $expectedValue['x']['result5'] }} } (x - {{ $expectedValue['x']['result'] }}) $</span>
-        <span>$ y = 0.2857 x  + 2.6486 $</span>
+        <span>$ y = 0.1971 x  + 8.1991 $</span>
 {{--        @php($constanta = round($rxy * ($expectedValue['x']['result5'] / $expectedValue['y']['result5']), 4))--}}
 {{--        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $constanta }} (y - {{ $expectedValue['y']['result'] }}) $</span>--}}
 {{--        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) }} + {{ $expectedValue['x']['result'] }} $</span>--}}
