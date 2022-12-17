@@ -3,6 +3,7 @@
  * @var \Illuminate\Support\Collection $users
  * @var \Illuminate\Support\Collection $usersSortedByX
  * @var \Illuminate\Support\Collection $usersSortedByY
+ * @var \App\Models\Report $report
  */
 @endphp
 <!doctype html>
@@ -51,12 +52,17 @@
             <span>$ n - \mathrm{число \, групп \, (интервалов)} $</span>
             <span>$ x_{min}, y_{min} - \mathrm{нижняя \, граница \, интервала} $</span>
             <span>$ x_{max}, y_{max} - \mathrm{верхняя \, граница \, интервала} $</span>
+            <span>$ \Delta x - \mathrm{размах \, выборки} $</span>
             <span>$ h - \mathrm{величина \, интервала} $</span>
             <span>$ \overline{x}_в, \overline{y}_в - \mathrm{выборочное \, среднее} $</span>
             <span>$ \overline{D}_в - \mathrm{средняя \, выборочная \, дисперсия} $</span>
             <span>$ \sigma_в - \mathrm{выборочное \, среднее \, квадратическое \, отклонение} $</span>
             <span>$ S^2 - \mathrm{несмещённая \, состоятельная \, оценка \, генеральной \, дисперсии} $</span>
             <span>$ S - \mathrm{исправленное \, выборочное \, среднее \, квадратическое \, отклонение} $</span>
+            <span>$ A_S - \mathrm{ассиметрия} $</span>
+            <span>$ E_S - \mathrm{эксцесс} $</span>
+            <span>$ K_{XY} - \mathrm{коэффициент \, ковариации} $</span>
+            <span>$ r_{xy} - \mathrm{коэффициент \, корреляции} $</span>
         </p>
     </div>
 
@@ -69,7 +75,7 @@
             $ Y $ - оценка студента по предмету «Технологии программирования».
         </p>
         <p class="text-base mb-4">
-            Вариации дискретные, так как имеют изолированные значения: $ X = \{0, 1, 2, \dots, 100\}; \; Y = \{0, 1, 2, \dots, 43\} $.
+            Вариации дискретные, так как имеют изолированные значения: $ X = \{0, 1, 2, \dots, 100\}; \; Y = \{0, 1, 2, \dots, 44\} $.
         </p>
         <p class="text-base mb-4">
             Материал взят из открытых ведомостей, которые регулярно обновляется, поэтому материал актуален на момент написания работы ― {{ now()->format('d.m.Y') }}
@@ -133,6 +139,7 @@
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ X $.</h3>
 
     <p class="text-base mb-4 flex flex-col gap-2">
+        {{--
         <span>$ X = \{ x_i \} $</span>
         @php
             $xMin = $usersSortedByX->shift();
@@ -146,7 +153,16 @@
         <span>$ x_{max} = {{ $xMax->first()->total_x }} \, ({{ $usersSortedByX->pop()->first()->total_x }}); \; m = {{ $xMax->count() }} $</span>
         <span>$ x_{max} - x_{min} = {{ $xMax->first()->total_x }} - {{ $xMin->first()->total_x }} = {{ $xMax->first()->total_x - $xMin->first()->total_x }} - \mathrm{размах \, выборки} $</span>
         <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \frac{\ln N}{\ln 10} = 1 + 3.22 \frac{\ln {{ $totalUsers }}}{\ln 10} = {{ $n }} \approx {{ $resultN }} - \mathrm{число \, интервалов} $</span>
-        <span>$ h = \frac{x_{max} - x_{min}}{n} = \frac{ {{ $xMax->first()->total_x }} - {{ $xMin->first()->total_x }} }{ {{ $resultN }} } = {{ $h }} - \mathrm{число \, групп \, (интервалов)} $</span>
+        <span>$ h = \frac{x_{max} - x_{min}}{n} = \frac{ {{ $xMax->first()->total_x }} - {{ $xMin->first()->total_x }} }{ {{ $resultN }} } = {{ $h }} - \mathrm{величина \, интервала} $</span>
+        --}}
+
+        <span>$ {{ strtoupper($report->x->type) }} = \{ {{ $report->x->type }}_i \} $</span>
+        <span>$ {{ $report->x->type }}_{min} = {{ $report->x->min_value }}; \; m = {{ $report->x->min_values }} $</span>
+        <span>$ {{ $report->x->type }}_{max} = {{ $report->x->max_value }};  \; m = {{ $report->x->max_values }} $</span>
+        <span>$ \Delta {{ $report->x->type }} = {{ $report->x->type }}_{max} - {{ $report->x->type }}_{min} = {{ $report->x->max_value }} - {{ $report->x->min_value }} = {{ $report->x->sample_size }} $</span>
+        <span>Посчитаем число интервалов по формуле Стёрджесса:</span>
+        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \lg {{ $report->total }} = {{ round(1 + 3.22 * log($report->total, 10), 4) }} \approx {{ $report->x->intervals_number }} $</span>
+        <span>$ h = \frac{ \Delta x }{n} = \frac{ {{ $report->x->sample_size }} }{ {{ $report->x->intervals_number }} } = {{ $report->x->interval_value }} $</span>
     </p>
 
     <h3 class="text-lg mb-4">Построим статистический ряд.</h3>
@@ -161,19 +177,34 @@
         </tr>
         </thead>
         <tbody>
-            @foreach($intervals as $interval)
+{{--            @foreach($intervals as $interval)--}}
+{{--                <tr>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>--}}
+{{--                </tr>--}}
+{{--            @endforeach--}}
+            @foreach($report->x->intervals as $interval)
                 <tr>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ ($loop->first ? '[' : '(') . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->ni }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->wi }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->middle }} $</td>
                 </tr>
             @endforeach
 
+{{--            <tr>--}}
+{{--                <td class=""></td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals)->sum('count') }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals)->sum('frequency') }} $</td>--}}
+{{--                <td class=""></td>--}}
+{{--            </tr>--}}
+
             <tr>
                 <td class=""></td>
-                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals)->sum('count') }} $</td>
-                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals)->sum('frequency') }} $</td>
+                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ $report->x->intervals->sum('ni') }} $</td>
+                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ $report->x->intervals->sum('wi') }} $</td>
                 <td class=""></td>
             </tr>
         </tbody>
@@ -181,17 +212,27 @@
 
     <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
-    <div class="chart_div" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals)->pluck('middle')->toJson() }}" data-labels="[0, 100, 5]"></div>
+{{--    <div class="chart_div" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals)->pluck('middle')->toJson() }}" data-labels="[0, 100, 5]"></div>--}}
+    <div class="chart_div" style="height: 300px; max-width: 210mm;" data-data="{{ $report->x->intervals->pluck('wi')->toJson() }}" data-middle="{{ $report->x->intervals->pluck('middle')->toJson() }}"></div>
 
     <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
-        <span>$ \overline{x}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x_i \omega_i} = {{ $expectedValue['x']['formula'] }} = {{ $expectedValue['x']['result'] }} $</span>
-        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $expectedValue['x']['formula2'] }} = {{ $expectedValue['x']['result2'] }} $</span>
-        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['x']['formula3'] }} = {{ $expectedValue['x']['result3'] }} $</span>
-        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['x']['formula4'] }} = {{ $expectedValue['x']['result4'] }} $</span>
-        <span>$ S = \sqrt{S^2} = {{ $expectedValue['x']['formula5'] }} = {{ $expectedValue['x']['result5'] }} $</span>
-        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $expectedValue['x']['formula6'] }} = {{ $expectedValue['x']['result6'] }} - \mathrm{коэффициент \, асимметрии} $</span>
-        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['x']['formula7'] }} = {{ $expectedValue['x']['result7'] }} - \mathrm{коэффициент \, эксцесса}$</span>
+{{--        <span>$ \overline{x}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x_i \omega_i} = {{ $expectedValue['x']['formula'] }} = {{ $expectedValue['x']['result'] }} $</span>--}}
+{{--        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $expectedValue['x']['formula2'] }} = {{ $expectedValue['x']['result2'] }} $</span>--}}
+{{--        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['x']['formula3'] }} = {{ $expectedValue['x']['result3'] }} $</span>--}}
+{{--        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['x']['formula4'] }} = {{ $expectedValue['x']['result4'] }} $</span>--}}
+{{--        <span>$ S = \sqrt{S^2} = {{ $expectedValue['x']['formula5'] }} = {{ $expectedValue['x']['result5'] }} $</span>--}}
+{{--        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $expectedValue['x']['formula6'] }} = {{ $expectedValue['x']['result6'] }} $</span>--}}
+{{--        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['x']['formula7'] }} = {{ $expectedValue['x']['result7'] }} $</span>--}}
+{{--        <span>---</span>--}}
+        <span>$ \overline{ {{ $report->x->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x_i \omega_i} = {{ $report->x->fM }} = {{ $report->x->M }} $</span>
+        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->x->fD }} = {{ $report->x->D }} $</span>
+        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->x->fs }} = {{ $report->x->s }} $</span>
+        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->x->fS2 }} = {{ $report->x->S2 }} $</span>
+        <span>$ S = \sqrt{S^2} = {{ $report->x->fS }} = {{ $report->x->S }} $</span>
+        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->x->fA }} = {{ $report->x->A }} $</span>
+        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->x->fE }} = {{ $report->x->E }} $</span>
+{{--        {{ dd($report->x) }}--}}
     </p>
 
     <p class="text-base mb-4">
@@ -313,6 +354,7 @@ f(x) =
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ Y $.</h3>
 
     <p class="text-base mb-4 flex flex-col gap-2">
+        {{--
         <span>$ Y = \{ y_i \} $</span>
         @php
             $yMin = $usersSortedByY->shift();
@@ -327,7 +369,17 @@ f(x) =
         <span>$ y_{max} = {{ $yMax->first()->total_y }} \, ({{ $usersSortedByY->pop()->first()->total_y }}); \; m = {{ $yMax->count() }} $</span>
         <span>$ y_{max} - y_{min} = {{ $yMax->first()->total_y }} - {{ $yMin->first()->total_y }} = {{ $yMax->first()->total_y - $yMin->first()->total_y }} - \mathrm{размах \, выборки} $</span>
         <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \frac{\ln N}{\ln 10} = 1 + 3.22 \frac{\ln {{ $totalUsers }}}{\ln 10} = {{ $n }} \approx {{ $resultN }} - \mathrm{число \, интервалов} $</span>
-        <span>$ h = \frac{y_{max} - y_{min}}{n} = \frac{ {{ $yMax->first()->total_y }} - {{ $yMin->first()->total_y }} }{ {{ $resultN }} } = {{ $h }} - \mathrm{число \, групп \, (интервалов)} $</span>
+        <span>$ h = \frac{y_{max} - y_{min}}{n} = \frac{ {{ $yMax->first()->total_y }} - {{ $yMin->first()->total_y }} }{ {{ $resultN }} } = {{ $h }} - \mathrm{величина \, интервала} $</span>
+        --}}
+
+        <span>$ {{ strtoupper($report->y->type) }} = \{ {{ $report->y->type }}_i \} $</span>
+        <span>$ {{ $report->y->type }}_{min} = {{ $report->y->min_value }}; \; m = {{ $report->y->min_values }} $</span>
+        <span>$ {{ $report->y->type }}_{max} = {{ $report->y->max_value }};  \; m = {{ $report->y->max_values }} $</span>
+        <span>$ \Delta {{ $report->y->type }} = {{ $report->y->type }}_{max} - {{ $report->y->type }}_{min} = {{ $report->y->max_value }} - {{ $report->y->min_value }} = {{ $report->y->sample_size }} $</span>
+        <span>Посчитаем число интервалов по формуле Стёрджесса:</span>
+        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \lg {{ $report->total }} = {{ round(1 + 3.22 * log($report->total, 10), 4) }} \approx {{ round(1 + 3.22 * log($report->total, 10)) }} $</span>
+        <span>Но для удобства счёта возьмём число интервалов $ n = {{ $report->y->intervals_number }} $</span>
+        <span>$ h = \frac{ \Delta x }{n} = \frac{ {{ $report->y->sample_size }} }{ {{ $report->y->intervals_number }} } = {{ $report->y->interval_value }} $</span>
     </p>
 
     <h3 class="text-lg mb-4">Построим статистический ряд.</h3>
@@ -342,19 +394,34 @@ f(x) =
         </tr>
         </thead>
         <tbody>
-            @foreach($intervals2 as $interval)
+{{--            @foreach($intervals2 as $interval)--}}
+{{--                <tr>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>--}}
+{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>--}}
+{{--                </tr>--}}
+{{--            @endforeach--}}
+            @foreach($report->y->intervals as $interval)
                 <tr>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ ($loop->first ? '[' : '(') . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->ni }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->wi }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->middle }} $</td>
                 </tr>
             @endforeach
 
+{{--            <tr>--}}
+{{--                <td></td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals2)->sum('count') }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals2)->sum('frequency') }} $</td>--}}
+{{--                <td></td>--}}
+{{--            </tr>--}}
+
             <tr>
                 <td class=""></td>
-                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals2)->sum('count') }} $</td>
-                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals2)->sum('frequency') }} $</td>
+                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ $report->y->intervals->sum('ni') }} $</td>
+                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ $report->y->intervals->sum('wi') }} $</td>
                 <td class=""></td>
             </tr>
         </tbody>
@@ -362,17 +429,27 @@ f(x) =
 
     <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
-    <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals2)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals2)->pluck('middle')->toJson() }}" data-labels="[0, 44, 4]"></div>
+{{--    <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals2)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals2)->pluck('middle')->toJson() }}" data-labels="[0, 44, 4]"></div>--}}
+    <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ $report->y->intervals->pluck('wi')->toJson() }}" data-middle="{{ $report->y->intervals->pluck('middle')->toJson() }}"></div>
 
     <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
-        <span>$ \overline{y}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y_i \omega_i} = {{ $expectedValue['y']['formula'] }} = {{ $expectedValue['y']['result'] }} $</span>
-        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y^2_i \omega_i} - (\overline{y}_в)^2 = {{ $expectedValue['y']['formula2'] }} = {{ $expectedValue['y']['result2'] }} $</span>
-        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['y']['formula3'] }} = {{ $expectedValue['y']['result3'] }} $</span>
-        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['y']['formula4'] }} = {{ $expectedValue['y']['result4'] }} $</span>
-        <span>$ S = \sqrt{S^2} = {{ $expectedValue['y']['formula5'] }} = {{ $expectedValue['y']['result5'] }} $</span>
-        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^3 \omega_i}}{S^3} = {{ $expectedValue['y']['formula6'] }} = {{ $expectedValue['y']['result6'] }} - \mathrm{коэффициент \, асимметрии} $</span>
-        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['y']['formula7'] }} = {{ $expectedValue['y']['result7'] }} - \mathrm{коэффициент \, эксцесса}$</span>
+{{--        <span>$ \overline{y}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y_i \omega_i} = {{ $expectedValue['y']['formula'] }} = {{ $expectedValue['y']['result'] }} $</span>--}}
+{{--        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y^2_i \omega_i} - (\overline{y}_в)^2 = {{ $expectedValue['y']['formula2'] }} = {{ $expectedValue['y']['result2'] }} $</span>--}}
+{{--        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['y']['formula3'] }} = {{ $expectedValue['y']['result3'] }} $</span>--}}
+{{--        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['y']['formula4'] }} = {{ $expectedValue['y']['result4'] }} $</span>--}}
+{{--        <span>$ S = \sqrt{S^2} = {{ $expectedValue['y']['formula5'] }} = {{ $expectedValue['y']['result5'] }} $</span>--}}
+{{--        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^3 \omega_i}}{S^3} = {{ $expectedValue['y']['formula6'] }} = {{ $expectedValue['y']['result6'] }} $</span>--}}
+{{--        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['y']['formula7'] }} = {{ $expectedValue['y']['result7'] }} $</span>--}}
+
+{{--        <span>------</span>--}}
+        <span>$ \overline{ {{ $report->y->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x_i \omega_i} = {{ $report->y->fM }} = {{ $report->y->M }} $</span>
+        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->y->fD }} = {{ $report->y->D }} $</span>
+        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->y->fs }} = {{ $report->y->s }} $</span>
+        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->y->fS2 }} = {{ $report->y->S2 }} $</span>
+        <span>$ S = \sqrt{S^2} = {{ $report->y->fS }} = {{ $report->y->S }} $</span>
+        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->y->fA }} = {{ $report->y->A }} $</span>
+        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->y->fE }} = {{ $report->y->E }} $</span>
     </p>
 
     <h3 class="text-lg mb-4">Найдём эмпирическую функцию распределения и построим ее график.</h3>
@@ -456,10 +533,10 @@ f(x) =
             <span>$ y_{x = {{ $yx['key'] }} } = {{ $yx['value'] }} = {{ $doubleXY['yx'][$loop->index] }} $</span>
         @endforeach
         <span>$ \overline{XY} = {{ $doubleXY['$XY'] }} = {{ $doubleXY['XY'] }} $</span>
-        <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $doubleXY['XY'] }} - {{ $expectedValue['x']['result'] }} \cdot {{ $expectedValue['y']['result'] }} = {{ $doubleXY['KXY'] }} $</span>
-        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $doubleXY['KXY'] . '}{' . $expectedValue['x']['result5'] . ' \cdot ' . $expectedValue['y']['result5'] . '}' }} = {{ $doubleXY['rxy'] }} $</span>
+        <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $doubleXY['XY'] }} - {{ $report->x->M }} \cdot {{ $report->y->M }} = {{ $doubleXY['KXY'] }} $</span>
+        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $doubleXY['KXY'] . '}{' . $report->x->S . ' \cdot ' . $report->y->S . '}' }} = {{ $doubleXY['rxy'] }} $</span>
         <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
-        <span>$ y - {{ $expectedValue['y']['result'] }} = {{ $doubleXY['rxy'] }} \frac{ {{ $expectedValue['y']['result5'] }} }{ {{ $expectedValue['x']['result5'] }} } (x - {{ $expectedValue['x']['result'] }}) $</span>
+        <span>$ y - {{ $report->y->M }} = {{ $doubleXY['rxy'] }} \frac{ {{ $report->y->S }} }{ {{ $report->x->S }} } (x - {{ $report->x->M }}) $</span>
         <span>$ y = 0.1971 x  + 8.1991 $</span>
 {{--        @php($constanta = round($rxy * ($expectedValue['x']['result5'] / $expectedValue['y']['result5']), 4))--}}
 {{--        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $constanta }} (y - {{ $expectedValue['y']['result'] }}) $</span>--}}

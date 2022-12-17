@@ -71,6 +71,7 @@ const chart = new LineChart(chartDiv, {
     series: {
         'series-1': {
             lineSmooth: Interpolation.step(),
+            showPoint: false,
             showArea: true,
         },
         'series-2': {
@@ -136,7 +137,7 @@ const chart2 = new LineChart(chartDiv2, {
     // Naming the series with the series object array notation
     series: [{
         name: 'series-1',
-        data: points4
+        data: points4,
     }, {
         name: 'series-2',
         data: points3
@@ -153,6 +154,7 @@ const chart2 = new LineChart(chartDiv2, {
     series: {
         'series-1': {
             lineSmooth: Interpolation.step(),
+            showPoint: false,
             showArea: true,
         },
         'series-2': {
@@ -191,9 +193,9 @@ series3 = [{
     x: 0, y: 0
 }, ...series3.slice(1, series3.length - 1), {
     x: series3.slice(1, series3.length - 1).pop().x + 10, y: 1
-}, {
+}/*, {
     x: series3.slice(1, series3.length - 1).pop().x + 10 * 2, y: 1
-}];
+}*/];
 
 const chart3 = new LineChart(chartDiv3, {
     // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
@@ -208,13 +210,19 @@ const chart3 = new LineChart(chartDiv3, {
         onlyInteger: true
     },
     fullWidth: true,
+    showPoint: false,
+
     // Within the series options you can use the series names
     // to specify configuration that will only be used for the
     // specific series.
     series: {
         'series-1': {
             // lineSmooth: Interpolation.cardinal(),
-            lineSmooth: Interpolation.step(),
+            lineSmooth: Interpolation.step({
+                // fillHoles: false,
+                postpone: false,
+            }),
+            // reverseData: true,
             // showArea: true,
         },
         // 'series-2': {
@@ -232,7 +240,7 @@ let series4 = JSON.parse(chartDiv4.dataset.data);
 series4 = [{
     x: 0, y: 0
 }, ...series4.slice(1, series4.length - 1), {
-    x: series4.slice(1, series4.length - 1).pop().x + 10, y: 1
+    x: series4.slice(1, series4.length - 1).pop().x + 4, y: 1
 }/*, {
     x: series4.slice(1, series4.length - 1).pop().x + 10 * 2, y: 1
 }*/];
@@ -250,13 +258,16 @@ const chart4 = new LineChart(chartDiv4, {
         onlyInteger: true
     },
     fullWidth: true,
+    showPoint: false,
     // Within the series options you can use the series names
     // to specify configuration that will only be used for the
     // specific series.
     series: {
         'series-1': {
             // lineSmooth: Interpolation.cardinal(),
-            lineSmooth: Interpolation.step(),
+            lineSmooth: Interpolation.step({
+                postpone: false
+            }),
             // showArea: true,
         },
         // 'series-2': {
