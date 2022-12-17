@@ -1,8 +1,5 @@
 @php
 /**
- * @var \Illuminate\Support\Collection $users
- * @var \Illuminate\Support\Collection $usersSortedByX
- * @var \Illuminate\Support\Collection $usersSortedByY
  * @var \App\Models\Report $report
  */
 @endphp
@@ -35,7 +32,6 @@
                 <p>Группа: <strong class="font-semibold">РИ-210911</strong></p>
                 <p>Преподаватель: <strong class="font-semibold">Поторочина Ксения Сергеевна</strong></p>
                 <p>Дата: <strong class="font-semibold">{{ now()->format('d.m.Y') }}</strong></p>
-                {{--            <p>Оценка: ___</p>--}}
             </div>
         </div>
         <div>
@@ -139,23 +135,6 @@
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ X $.</h3>
 
     <p class="text-base mb-4 flex flex-col gap-2">
-        {{--
-        <span>$ X = \{ x_i \} $</span>
-        @php
-            $xMin = $usersSortedByX->shift();
-            $xMax = $usersSortedByX->pop();
-            $n = 1 + 3.22 * (log($totalUsers) / log(10));
-//            $resultN = (floor($n) % 2 === 0) ? ceil($n) : floor($n);
-            $resultN = ceil($n);
-            $h = ($xMax->first()->total_x - $xMin->first()->total_x) / $resultN;
-        @endphp
-        <span>$ x_{min} = {{ $xMin->first()->total_x }} \, ({{ $usersSortedByX->shift()->first()->total_x }}); \; m = {{ $xMin->count() }} $</span>
-        <span>$ x_{max} = {{ $xMax->first()->total_x }} \, ({{ $usersSortedByX->pop()->first()->total_x }}); \; m = {{ $xMax->count() }} $</span>
-        <span>$ x_{max} - x_{min} = {{ $xMax->first()->total_x }} - {{ $xMin->first()->total_x }} = {{ $xMax->first()->total_x - $xMin->first()->total_x }} - \mathrm{размах \, выборки} $</span>
-        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \frac{\ln N}{\ln 10} = 1 + 3.22 \frac{\ln {{ $totalUsers }}}{\ln 10} = {{ $n }} \approx {{ $resultN }} - \mathrm{число \, интервалов} $</span>
-        <span>$ h = \frac{x_{max} - x_{min}}{n} = \frac{ {{ $xMax->first()->total_x }} - {{ $xMin->first()->total_x }} }{ {{ $resultN }} } = {{ $h }} - \mathrm{величина \, интервала} $</span>
-        --}}
-
         <span>$ {{ strtoupper($report->x->type) }} = \{ {{ $report->x->type }}_i \} $</span>
         <span>$ {{ $report->x->type }}_{min} = {{ $report->x->min_value }}; \; m = {{ $report->x->min_values }} $</span>
         <span>$ {{ $report->x->type }}_{max} = {{ $report->x->max_value }};  \; m = {{ $report->x->max_values }} $</span>
@@ -177,14 +156,6 @@
         </tr>
         </thead>
         <tbody>
-{{--            @foreach($intervals as $interval)--}}
-{{--                <tr>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>--}}
-{{--                </tr>--}}
-{{--            @endforeach--}}
             @foreach($report->x->intervals as $interval)
                 <tr>
                     <td class="border px-6 py-4 text-center">$ {{ ($loop->first ? '[' : '(') . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
@@ -193,13 +164,6 @@
                     <td class="border px-6 py-4 text-center">$ {{ $interval->middle }} $</td>
                 </tr>
             @endforeach
-
-{{--            <tr>--}}
-{{--                <td class=""></td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals)->sum('count') }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals)->sum('frequency') }} $</td>--}}
-{{--                <td class=""></td>--}}
-{{--            </tr>--}}
 
             <tr>
                 <td class=""></td>
@@ -212,19 +176,10 @@
 
     <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
-{{--    <div class="chart_div" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals)->pluck('middle')->toJson() }}" data-labels="[0, 100, 5]"></div>--}}
     <div class="chart_div" style="height: 300px; max-width: 210mm;" data-data="{{ $report->x->intervals->pluck('wi')->toJson() }}" data-middle="{{ $report->x->intervals->pluck('middle')->toJson() }}"></div>
 
     <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
-{{--        <span>$ \overline{x}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x_i \omega_i} = {{ $expectedValue['x']['formula'] }} = {{ $expectedValue['x']['result'] }} $</span>--}}
-{{--        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals) }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $expectedValue['x']['formula2'] }} = {{ $expectedValue['x']['result2'] }} $</span>--}}
-{{--        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['x']['formula3'] }} = {{ $expectedValue['x']['result3'] }} $</span>--}}
-{{--        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['x']['formula4'] }} = {{ $expectedValue['x']['result4'] }} $</span>--}}
-{{--        <span>$ S = \sqrt{S^2} = {{ $expectedValue['x']['formula5'] }} = {{ $expectedValue['x']['result5'] }} $</span>--}}
-{{--        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $expectedValue['x']['formula6'] }} = {{ $expectedValue['x']['result6'] }} $</span>--}}
-{{--        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['x']['formula7'] }} = {{ $expectedValue['x']['result7'] }} $</span>--}}
-{{--        <span>---</span>--}}
         <span>$ \overline{ {{ $report->x->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x_i \omega_i} = {{ $report->x->fM }} = {{ $report->x->M }} $</span>
         <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->x->fD }} = {{ $report->x->D }} $</span>
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->x->fs }} = {{ $report->x->s }} $</span>
@@ -232,7 +187,6 @@
         <span>$ S = \sqrt{S^2} = {{ $report->x->fS }} = {{ $report->x->S }} $</span>
         <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->x->fA }} = {{ $report->x->A }} $</span>
         <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->x->fE }} = {{ $report->x->E }} $</span>
-{{--        {{ dd($report->x) }}--}}
     </p>
 
     <p class="text-base mb-4">
@@ -254,13 +208,6 @@
         </tr>
         </thead>
         <tbody>
-{{--        @foreach($empiricalFunctionArray as $interval)--}}
-{{--            <tr>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>--}}
-{{--            </tr>--}}
-{{--        @endforeach--}}
             @foreach($report->x->intervals as $interval)
                 @if ($loop->first)
                     <tr>
@@ -289,7 +236,6 @@
 
     <h3 class="text-lg mb-4">Кумулята:</h3>
 
-{{--    <div class="chart_div_3" data-data="{{ collect($empiricalFunctionArray)->toJson() }}"></div>--}}
     <div class="chart_div_3" data-data="{{ $report->x->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->x->intervals->last()->interval[1] + $report->x->interval_value, 'y' => 1])->toJson() }}"></div>
 
     <h3 class="text-lg mb-4">Проверка критерия Пирсона</h3>
@@ -328,65 +274,29 @@ f(x) =
         </tr>
         </thead>
         <tbody>
-{{--        @foreach($bigTable['x'] as $interval)--}}
-{{--            <tr>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['id'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['ni'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['pi'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['n`i'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['ni - n`i'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2/n`i'] }} $</td>--}}
-{{--            </tr>--}}
-{{--        @endforeach--}}
-{{--        <tr>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--        </tr>--}}
-        @foreach ($report->x->intervals as $interval)
+            @foreach ($report->x->intervals as $interval)
+                <tr>
+                    <td class="border px-6 py-4 text-center">$ {{ $loop->iteration }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ ($loop->first ? '[' : '(') . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->ni }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->pi }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->pni }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->dni }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->dni2 }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->pearson }} $</td>
+                </tr>
+            @endforeach
             <tr>
-                <td class="border px-6 py-4 text-center">$ {{ $loop->iteration }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ ($loop->first ? '[' : '(') . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->ni }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->pi }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->pni }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->dni }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->dni2 }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->pearson }} $</td>
+                <td></td>
+                <td></td>
+                <td class="border px-6 py-4 text-center">$ {{ $report->x->intervals->sum('ni') }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $report->x->intervals->sum('pi') }} $</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="border px-6 py-4 text-center">$ \chi^2_{набл} = {{ $report->x->intervals->sum('pearson') }} $</td>
             </tr>
-        @endforeach
-        <tr>
-            <td></td>
-            <td></td>
-            <td class="border px-6 py-4 text-center">$ {{ $report->x->intervals->sum('ni') }} $</td>
-            <td class="border px-6 py-4 text-center">$ {{ $report->x->intervals->sum('pi') }} $</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="border px-6 py-4 text-center">$ \chi^2_{набл} = {{ $report->x->intervals->sum('pearson') }} $</td>
-        </tr>
         </tbody>
-{{--        <tfoot>--}}
-{{--        <tr>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td class="border px-6 py-4 text-center">$ {{ $bigTable['x_n'] }} $</td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td class="border px-6 py-4 text-center">$ \chi^2_{набл} = {{ $bigTable['x_chi'] }} $</td>--}}
-{{--        </tr>--}}
-
-
-{{--        </tfoot>--}}
     </table>
 
     <p class="text-base mb-4 flex flex-col gap-2">
@@ -412,24 +322,6 @@ f(x) =
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ Y $.</h3>
 
     <p class="text-base mb-4 flex flex-col gap-2">
-        {{--
-        <span>$ Y = \{ y_i \} $</span>
-        @php
-            $yMin = $usersSortedByY->shift();
-            $yMax = $usersSortedByY->pop();
-            $n = 1 + 3.22 * (log($totalUsers) / log(10));
-//            $resultN = (floor($n) % 2 === 0) ? ceil($n) : floor($n);
-//            $resultN = ceil($n);
-            $resultN = 11;
-            $h = ($yMax->first()->total_y - $yMin->first()->total_y) / $resultN;
-        @endphp
-        <span>$ y_{min} = {{ $yMin->first()->total_y }} \, ({{ $usersSortedByY->shift()->first()->total_y }}); \; m = {{ $yMin->count() }} $</span>
-        <span>$ y_{max} = {{ $yMax->first()->total_y }} \, ({{ $usersSortedByY->pop()->first()->total_y }}); \; m = {{ $yMax->count() }} $</span>
-        <span>$ y_{max} - y_{min} = {{ $yMax->first()->total_y }} - {{ $yMin->first()->total_y }} = {{ $yMax->first()->total_y - $yMin->first()->total_y }} - \mathrm{размах \, выборки} $</span>
-        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \frac{\ln N}{\ln 10} = 1 + 3.22 \frac{\ln {{ $totalUsers }}}{\ln 10} = {{ $n }} \approx {{ $resultN }} - \mathrm{число \, интервалов} $</span>
-        <span>$ h = \frac{y_{max} - y_{min}}{n} = \frac{ {{ $yMax->first()->total_y }} - {{ $yMin->first()->total_y }} }{ {{ $resultN }} } = {{ $h }} - \mathrm{величина \, интервала} $</span>
-        --}}
-
         <span>$ {{ strtoupper($report->y->type) }} = \{ {{ $report->y->type }}_i \} $</span>
         <span>$ {{ $report->y->type }}_{min} = {{ $report->y->min_value }}; \; m = {{ $report->y->min_values }} $</span>
         <span>$ {{ $report->y->type }}_{max} = {{ $report->y->max_value }};  \; m = {{ $report->y->max_values }} $</span>
@@ -452,14 +344,6 @@ f(x) =
         </tr>
         </thead>
         <tbody>
-{{--            @foreach($intervals2 as $interval)--}}
-{{--                <tr>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['count'] }} $</td>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['frequency'] }} $</td>--}}
-{{--                    <td class="border px-6 py-4 text-center">$ {{ $interval['middle'] }} $</td>--}}
-{{--                </tr>--}}
-{{--            @endforeach--}}
             @foreach($report->y->intervals as $interval)
                 <tr>
                     <td class="border px-6 py-4 text-center">$ {{ ($loop->first ? '[' : '(') . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
@@ -468,13 +352,6 @@ f(x) =
                     <td class="border px-6 py-4 text-center">$ {{ $interval->middle }} $</td>
                 </tr>
             @endforeach
-
-{{--            <tr>--}}
-{{--                <td></td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ \sum{n_i} = {{ collect($intervals2)->sum('count') }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ \sum{\omega_i} = {{ collect($intervals2)->sum('frequency') }} $</td>--}}
-{{--                <td></td>--}}
-{{--            </tr>--}}
 
             <tr>
                 <td class=""></td>
@@ -487,20 +364,10 @@ f(x) =
 
     <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
-{{--    <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ collect($intervals2)->pluck('frequency')->toJson() }}" data-middle="{{ collect($intervals2)->pluck('middle')->toJson() }}" data-labels="[0, 44, 4]"></div>--}}
     <div class="chart_div_2" style="height: 300px; max-width: 210mm;" data-data="{{ $report->y->intervals->pluck('wi')->toJson() }}" data-middle="{{ $report->y->intervals->pluck('middle')->toJson() }}"></div>
 
     <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
-{{--        <span>$ \overline{y}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y_i \omega_i} = {{ $expectedValue['y']['formula'] }} = {{ $expectedValue['y']['result'] }} $</span>--}}
-{{--        <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {y^2_i \omega_i} - (\overline{y}_в)^2 = {{ $expectedValue['y']['formula2'] }} = {{ $expectedValue['y']['result2'] }} $</span>--}}
-{{--        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $expectedValue['y']['formula3'] }} = {{ $expectedValue['y']['result3'] }} $</span>--}}
-{{--        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $expectedValue['y']['formula4'] }} = {{ $expectedValue['y']['result4'] }} $</span>--}}
-{{--        <span>$ S = \sqrt{S^2} = {{ $expectedValue['y']['formula5'] }} = {{ $expectedValue['y']['result5'] }} $</span>--}}
-{{--        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^3 \omega_i}}{S^3} = {{ $expectedValue['y']['formula6'] }} = {{ $expectedValue['y']['result6'] }} $</span>--}}
-{{--        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ count($intervals2) }} } {(y_i - \overline{y_в})^4 \omega_i}}{S^4} - 3 = {{ $expectedValue['y']['formula7'] }} = {{ $expectedValue['y']['result7'] }} $</span>--}}
-
-{{--        <span>------</span>--}}
         <span>$ \overline{ {{ $report->y->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x_i \omega_i} = {{ $report->y->fM }} = {{ $report->y->M }} $</span>
         <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->y->fD }} = {{ $report->y->D }} $</span>
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->y->fs }} = {{ $report->y->s }} $</span>
@@ -521,62 +388,37 @@ f(x) =
         </tr>
         </thead>
         <tbody>
-{{--        @foreach($empiricalFunctionArrayY as $interval)--}}
-{{--            <tr>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>--}}
-{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>--}}
-{{--            </tr>--}}
-{{--        @endforeach--}}
-{{--        <tr>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--            <td></td>--}}
-{{--        </tr>--}}
-        @foreach($report->y->intervals as $interval)
-            @if ($loop->first)
-                <tr>
-                    <td class="border px-6 py-4 text-center">$ {{ '(-\infty; ' . $interval->interval[0] . ']' }} $</td>
-                    <td class="border px-6 py-4 text-center">$ {{ $interval->interval[0] }} $</td>
-                    <td class="border px-6 py-4 text-center">$ 0 $</td>
-                </tr>
-            @endif
+            @foreach($report->y->intervals as $interval)
+                @if ($loop->first)
+                    <tr>
+                        <td class="border px-6 py-4 text-center">$ {{ '(-\infty; ' . $interval->interval[0] . ']' }} $</td>
+                        <td class="border px-6 py-4 text-center">$ {{ $interval->interval[0] }} $</td>
+                        <td class="border px-6 py-4 text-center">$ 0 $</td>
+                    </tr>
+                @endif
 
-            <tr>
-                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->interval[1] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval->accumulative }} $</td>
-            </tr>
-
-            @if ($loop->last)
                 <tr>
-                    <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[1] . '; +\infty)' }} $</td>
-                    <td class="border px-6 py-4 text-center">$ +\infty $</td>
-                    <td class="border px-6 py-4 text-center">$ 1 $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->interval[1] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->accumulative }} $</td>
                 </tr>
-            @endif
-        @endforeach
+
+                @if ($loop->last)
+                    <tr>
+                        <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[1] . '; +\infty)' }} $</td>
+                        <td class="border px-6 py-4 text-center">$ +\infty $</td>
+                        <td class="border px-6 py-4 text-center">$ 1 $</td>
+                    </tr>
+                @endif
+            @endforeach
         </tbody>
     </table>
 
     <h3 class="text-lg mb-4">Кумулята:</h3>
 
-{{--    <div class="h" data-data="{{ collect($empiricalFunctionArrayY)->toJson() }}"></div>--}}
     <div class="chart_div_4" data-data="{{ $report->y->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->y->intervals->last()->interval[1] + $report->y->interval_value, 'y' => 1])->toJson() }}"></div>
 
     <h2 class="text-xl mb-4">Двумерная выборка:</h2>
-
-{{--    <table class="w-full mb-4">--}}
-{{--        <tbody class="text-xs">--}}
-{{--        @foreach($double as $values)--}}
-{{--            <tr class="first-of-type:font-bold">--}}
-{{--                @foreach($values as $value)--}}
-{{--                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $value === 0 ? '' : $value }}</td>--}}
-{{--                @endforeach--}}
-{{--            </tr>--}}
-{{--        @endforeach--}}
-{{--        </tbody>--}}
-{{--    </table>--}}
 
     <table class="w-full mb-4">
         <tbody class="text-xs">
@@ -621,18 +463,9 @@ f(x) =
         <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
         <span>$ y - {{ $report->y->M }} = {{ $report->doubleXY['rxy'] }} \frac{ {{ $report->y->S }} }{ {{ $report->x->S }} } (x - {{ $report->x->M }}) $</span>
         <span>$ y = 0.1971 x  + 8.1991 $</span>
-{{--        @php($constanta = round($rxy * ($expectedValue['x']['result5'] / $expectedValue['y']['result5']), 4))--}}
-{{--        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $constanta }} (y - {{ $expectedValue['y']['result'] }}) $</span>--}}
-{{--        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) }} + {{ $expectedValue['x']['result'] }} $</span>--}}
-{{--        <span>$ x = {{ $constanta }}y + {{ round($expectedValue['y']['result'] * $constanta, 4) + $expectedValue['x']['result'] }} $</span>--}}
     </p>
 
-{{--    <div class="chart_div_5" data-data="{{ json_encode($graphic) }}"></div>--}}
     <div class="chart_div_5" data-data="{{ json_encode($report->doubleXY['points']) }}"></div>
-
-{{--    <div class="chart_div"></div>--}}
-{{--    {{ dd($intervals) }}--}}
-
 </article>
 
 <script>

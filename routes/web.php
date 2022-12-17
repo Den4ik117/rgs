@@ -17,6 +17,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'index');
 
-//Route::post('/upload-file', [UploadFileController::class, 'store'])->name('upload-file');
-
 Route::get('/report', [ReportController::class, 'index'])->name('report');

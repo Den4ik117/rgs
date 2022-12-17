@@ -86,8 +86,5 @@ class Value
         $this->fE = '\frac{' . $this->intervals->map(fn (Interval $in) => '(' . $in->middle . ' - ' . $this->M . ')^4' . '\cdot' . $in->wi)->take(4)->implode('+') . ' + \dots}{' . $this->S . '^4} - 3';
 
         $this->intervals->each(fn (Interval $in) => $in->setM($this->M));
-
-//        $this->fM = $this->intervals->map(fn (Interval $in) => $in->wi . '\dot' . $in->middle)->implode('+');
-//        dd($this);
     }
 }

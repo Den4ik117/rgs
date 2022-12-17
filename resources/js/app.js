@@ -1,24 +1,5 @@
-// import axios from 'axios';
-import { LineChart, Interpolation, BarChart, AutoScaleAxis } from 'chartist';
+import { LineChart, Interpolation, AutoScaleAxis } from 'chartist';
 import 'chartist/dist/index.css';
-
-// import.meta.glob([
-//     '../images/**',
-// ]);
-
-/*new BarChart('.chart_div', {
-
-    labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'],
-    series: [
-        [1, 2, 4, 8, 6, -2, -1, -4, -6, -2]
-    ]
-}, {
-    high: 10,
-    low: -10,
-    axisX: {
-        labelInterpolationFnc: (value, index) => (index % 2 === 0 ? value : null)
-    }
-});*/
 
 const chartDiv = document.querySelector('.chart_div');
 const series = JSON.parse(chartDiv.dataset.data);
@@ -42,16 +23,9 @@ for (let i = 0, j = 0; i < series.length; i++, j += 10) {
 points2.push({
     x: 100,
     y: 0,
-})
-// console.log(points2)
-// series.push(series[series.length - 1])
-// series.unshift(0)
-// series.unshift(series[0])
-// series.push(0)
+});
 
-const chart = new LineChart(chartDiv, {
-    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
-    // Naming the series with the series object array notation
+new LineChart(chartDiv, {
     series: [{
         name: 'series-1',
         data: points2
@@ -65,9 +39,6 @@ const chart = new LineChart(chartDiv, {
         onlyInteger: true
     },
     fullWidth: true,
-    // Within the series options you can use the series names
-    // to specify configuration that will only be used for the
-    // specific series.
     series: {
         'series-1': {
             lineSmooth: Interpolation.step(),
@@ -76,31 +47,9 @@ const chart = new LineChart(chartDiv, {
         },
         'series-2': {
             lineSmooth: Interpolation.simple(),
-            // showArea: true
-        },
-        // 'series-3': {
-        //     showPoint: false
-        // }
+        }
     }
-}, [
-    // You can even use responsive configuration overrides to
-    // customize your series configuration even further!
-    // ['screen and (max-width: 320px)', {
-    //     series: {
-    //         'series-1': {
-    //             lineSmooth: Interpolation.none()
-    //         },
-            // 'series-2': {
-            //     lineSmooth: Interpolation.none(),
-            //     showArea: false
-            // },
-            // 'series-3': {
-            //     lineSmooth: Interpolation.none(),
-            //     showPoint: true
-            // }
-        // }
-    // }]
-]);
+});
 
 
 const chartDiv2 = document.querySelector('.chart_div_2');
@@ -125,16 +74,9 @@ for (let i = 0, j = 0; i < series2.length; i++, j += 4) {
 points4.push({
     x: 44,
     y: 0,
-})
-// console.log(points2)
-// series.push(series[series.length - 1])
-// series.unshift(0)
-// series.unshift(series[0])
-// series.push(0)
+});
 
-const chart2 = new LineChart(chartDiv2, {
-    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
-    // Naming the series with the series object array notation
+new LineChart(chartDiv2, {
     series: [{
         name: 'series-1',
         data: points4,
@@ -148,9 +90,6 @@ const chart2 = new LineChart(chartDiv2, {
         onlyInteger: true
     },
     fullWidth: true,
-    // Within the series options you can use the series names
-    // to specify configuration that will only be used for the
-    // specific series.
     series: {
         'series-1': {
             lineSmooth: Interpolation.step(),
@@ -159,33 +98,10 @@ const chart2 = new LineChart(chartDiv2, {
         },
         'series-2': {
             lineSmooth: Interpolation.simple(),
-            // showArea: true
-        },
-        // 'series-3': {
-        //     showPoint: false
-        // }
+        }
     }
-}, [
-    // You can even use responsive configuration overrides to
-    // customize your series configuration even further!
-    // ['screen and (max-width: 320px)', {
-    //     series: {
-    //         'series-1': {
-    //             lineSmooth: Interpolation.none()
-    //         },
-            // 'series-2': {
-            //     lineSmooth: Interpolation.none(),
-            //     showArea: false
-            // },
-            // 'series-3': {
-            //     lineSmooth: Interpolation.none(),
-            //     showPoint: true
-            // }
-        // }
-    // }]
-]);
+});
 
-// alert('test2')
 
 const chartDiv3 = document.querySelector('.chart_div_3');
 let series3 = JSON.parse(chartDiv3.dataset.data);
@@ -193,13 +109,9 @@ series3 = [{
     x: 0, y: 0
 }, ...series3.slice(1, series3.length - 1), {
     x: series3.slice(1, series3.length - 1).pop().x + 10, y: 1
-}/*, {
-    x: series3.slice(1, series3.length - 1).pop().x + 10 * 2, y: 1
-}*/];
+}];
 
-const chart3 = new LineChart(chartDiv3, {
-    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
-    // Naming the series with the series object array notation
+new LineChart(chartDiv3, {
     series: [{
         name: 'series-1',
         data: series3
@@ -212,42 +124,20 @@ const chart3 = new LineChart(chartDiv3, {
     fullWidth: true,
     showPoint: false,
 
-    // Within the series options you can use the series names
-    // to specify configuration that will only be used for the
-    // specific series.
     series: {
         'series-1': {
             // lineSmooth: Interpolation.cardinal(),
             lineSmooth: Interpolation.step({
-                // fillHoles: false,
-                postpone: false,
+                postpone: false
             }),
-            // reverseData: true,
-            // showArea: true,
-        },
-        // 'series-2': {
-        //     lineSmooth: Interpolation.simple(),
-            // showArea: true
-        // },
-        // 'series-3': {
-        //     showPoint: false
-        // }
+        }
     }
 });
 
 const chartDiv4 = document.querySelector('.chart_div_4');
 let series4 = JSON.parse(chartDiv4.dataset.data);
-const series45 = [{
-    x: 0, y: 0
-}, ...series4.slice(1, series4.length - 1), {
-    x: series4.slice(1, series4.length - 1).pop().x + 4, y: 1
-}/*, {
-    x: series4.slice(1, series4.length - 1).pop().x + 10 * 2, y: 1
-}*/];
 
-const chart4 = new LineChart(chartDiv4, {
-    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
-    // Naming the series with the series object array notation
+new LineChart(chartDiv4, {
     series: [{
         name: 'series-1',
         data: series4
@@ -259,35 +149,20 @@ const chart4 = new LineChart(chartDiv4, {
     },
     fullWidth: true,
     showPoint: false,
-    // Within the series options you can use the series names
-    // to specify configuration that will only be used for the
-    // specific series.
     series: {
         'series-1': {
-            // lineSmooth: Interpolation.cardinal(),
             lineSmooth: Interpolation.step({
                 postpone: false
             }),
-            // showArea: true,
-        },
-        // 'series-2': {
-        //     lineSmooth: Interpolation.simple(),
-            // showArea: true
-        // },
-        // 'series-3': {
-        //     showPoint: false
-        // }
+        }
     }
 });
 
 const chartDiv5 = document.querySelector('.chart_div_5');
 let series5 = JSON.parse(chartDiv5.dataset.data);
-// const line = (x) => 0.2857 * x + 2.6486;
 const line = (x) => 0.1971 * x  + 8.1991;
 
-const chart5 = new LineChart(chartDiv5, {
-    // labels: [-10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
-    // Naming the series with the series object array notation
+new LineChart(chartDiv5, {
     series: [{
         name: 'series-1',
         data: series5
@@ -301,21 +176,12 @@ const chart5 = new LineChart(chartDiv5, {
         onlyInteger: true
     },
     fullWidth: true,
-    // Within the series options you can use the series names
-    // to specify configuration that will only be used for the
-    // specific series.
     series: {
         'series-1': {
-            // lineSmooth: Interpolation.cardinal(),
             lineSmooth: Interpolation.none(),
-            // showArea: true,
         },
         'series-2': {
             lineSmooth: Interpolation.none(),
-            // showArea: true
-        },
-        // 'series-3': {
-        //     showPoint: false
-        // }
+        }
     }
 });
