@@ -31,5 +31,7 @@
                 {{ $slot }}
             </main>
         </div>
+
+        @include('metricts')
     </body>
 </html>
