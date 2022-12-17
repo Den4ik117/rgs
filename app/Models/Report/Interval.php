@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Report;
 
 class Interval
 {
@@ -35,6 +35,6 @@ class Interval
         $this->pni = round($this->total * $this->pi);
         $this->dni = $this->ni - $this->pni;
         $this->dni2 = pow($this->dni, 2);
-        $this->pearson = round($this->dni2 / $this->pni, 4);
+        $this->pearson = round($this->dni2 / ($this->pni == 0 ? 0.00000001 : $this->pni), 4);
     }
 }

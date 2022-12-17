@@ -1,8 +1,8 @@
 import { LineChart, Interpolation, AutoScaleAxis } from 'chartist';
 import 'chartist/dist/index.css';
-import Alpine from 'alpinejs';
 
 const chartDiv = document.querySelector('.chart_div');
+
 if (chartDiv) {
     const series = JSON.parse(chartDiv.dataset.data);
     const middles = JSON.parse(chartDiv.dataset.middle);
@@ -188,7 +188,3 @@ if (chartDiv) {
         }
     });
 }
-
-window.Alpine = Alpine;
-
-Alpine.start();

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Report;
+use App\Models\Report\Report;
 use App\Models\User;
 
 class ReportController extends Controller

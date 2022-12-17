@@ -24,6 +24,12 @@
             </a>
         </li>
         <li class="">
+            <a href="{{ route('dashboard') }}" class="block px-16 py-6 text-center text-base text-indigo-500 bg-gray-100 hover:bg-gray-200 font-semibold relative">
+                <span class="material-icons-round absolute top-1/2 -translate-y-1/2 left-3 text-3xl">person</span>
+                Личный кабинет
+            </a>
+        </li>
+        <li class="">
             <a href="{{ route('report') }}" class="block px-16 py-6 text-center text-base text-indigo-500 bg-gray-100 hover:bg-gray-200 rounded-b-xl font-semibold relative">
                 <span class="material-icons-round absolute top-1/2 -translate-y-1/2 left-3 text-3xl">description</span>
                 Посмотреть отчёт

@@ -24,6 +24,12 @@
         </div>
 
         <div>
+            <x-input-label for="group" :value="__('Академическая группа')" />
+            <x-text-input id="group" name="group" type="text" class="mt-1 block w-full" :value="old('group', $user->group)" autocomplete="name" />
+            <x-input-error class="mt-2" :messages="$errors->get('group')" />
+        </div>
+
+        <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />

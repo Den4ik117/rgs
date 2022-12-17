@@ -1,9 +1,9 @@
 @php
-/**
- * @var \App\Models\Report\Report $report
- */
+    /**
+     * @var \App\Models\Report\UsersReport $report
+     */
 @endphp
-<!doctype html>
+    <!doctype html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +13,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Round" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap"
+          rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -28,8 +29,10 @@
         <div class="flex flex-col">
             <h1 class="text-2xl mb-8 font-bold">Расчётно-графическая работа<br>по математической статистике</h1>
             <div class="mt-16 text-left ml-auto">
-                <p>Выполнил: <strong class="font-semibold">Загвоздин Денис Сергеевич</strong></p>
-                <p>Группа: <strong class="font-semibold">РИ-210911</strong></p>
+                <p>Выполнил: <strong class="font-semibold">{{ $user->full_name }}</strong></p>
+                @if ($user->group)
+                    <p>Группа: <strong class="font-semibold">{{ $user->group }}</strong></p>
+                @endif
                 <p>Преподаватель: <strong class="font-semibold">Поторочина Ксения Сергеевна</strong></p>
                 <p>Дата: <strong class="font-semibold">{{ now()->format('d.m.Y') }}</strong></p>
             </div>
@@ -62,7 +65,7 @@
         </p>
     </div>
 
-    <div class="flex flex-col" style="page-break-after: always; height: 297mm;">
+    <div class="flex flex-col" style="page-break-after: always; height: 297mm; display: none;">
         <h2 class="text-xl font-semibold mb-6 text-center">Введение</h2>
         <p class="text-base mb-4">
             Исследуем корреляцию между оценками студентов в смежных предметах: основы веб-технологий и технологии
@@ -122,8 +125,8 @@
         @foreach($users->chunk($chunkSize) as $chunk)
             <tr>
                 @foreach($chunk as $user)
-                    <td class="border px-1 py-1 text-center border-l-2 border-gray-300">{{ $user->total_x }}</td>
-                    <td class="border px-1 py-1 text-center border-r-2 border-gray-300">{{ $user->total_y }}</td>
+                    <td class="border px-1 py-1 text-center border-l-2 border-gray-300">{{ $user->x }}</td>
+                    <td class="border px-1 py-1 text-center border-r-2 border-gray-300">{{ $user->y }}</td>
                 @endforeach
                 @if ($loop->last)
                     @for ($i = 0; $i < ($chunkSize - $report->total % $chunkSize); $i++)

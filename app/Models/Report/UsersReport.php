@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Report;
 
 use Illuminate\Database\Eloquent\Collection;
 
-class Report
+class UsersReport
 {
-    const X_INTERVALS = 10;
-    const Y_INTERVALS = 11;
+//    const X_INTERVALS = 10;
+//    const Y_INTERVALS = 11;
 
-    public readonly Value $x;
-    public readonly Value $y;
+    public readonly UsersValue $x;
+    public readonly UsersValue $y;
     public readonly int $total;
     public readonly array $doubleXY;
 
-    public function __construct(Collection $users)
+    public function __construct(Collection $collection, int $x_intervals, int $y_intervals)
     {
-        $this->total = $users->count();
+        $this->total = $collection->count();
 
-        $this->x = new Value($users, 'x', self::X_INTERVALS, $this->total);
-        $this->y = new Value($users, 'y', self::Y_INTERVALS, $this->total);
+        $this->x = new UsersValue($collection, 'x', $x_intervals, $this->total);
+        $this->y = new UsersValue($collection, 'y', $y_intervals, $this->total);
 
         $doubleXY = [
             'values' => [],
@@ -33,7 +33,7 @@ class Report
         $i = 0;
         foreach ($this->x->intervals as $int_x) {
             foreach ($this->y->intervals as $int_y) {
-                $countUsers = $users
+                $countUsers = $collection
                         ->whereBetween($this->x->column, [$int_x->interval[0] === $this->x->min_value ? $int_x->interval[0] : $int_x->interval[0] + 1, $int_x->interval[1]])
                         ->whereBetween($this->y->column, [$int_y->interval[0] === $this->y->min_value ? $int_y->interval[0] : $int_y->interval[0] + 1, $int_y->interval[1]])
                         ->count();
@@ -46,11 +46,11 @@ class Report
                 }
                 $i++;
             }
-            $nx = $users
+            $nx = $collection
                     ->whereBetween($this->x->column, [$int_x->interval[0] === $this->x->min_value ? $int_x->interval[0] : $int_x->interval[0] + 1, $int_x->interval[1]])
                     ->count();
             $doubleXY['nx'][] = $nx;
-            $doubleXY['yx'][] = round((array_sum($doubleXY['intermediate'])) / $nx, 4);
+            $doubleXY['yx'][] = round((array_sum($doubleXY['intermediate'])) / ($nx === 0 ? 0.00001 : $nx), 4);
             $doubleXY['$yx'][] = ['key' => $int_x->middle, 'value' => '(' . implode('+', $doubleXY['$intermediate']) . ') \frac{1}{' . $nx . '}'];
             $doubleXY['points'][] = ['x' => $int_x->middle, 'y' => end($doubleXY['yx'])];
             $doubleXY['intermediate'] = [];
