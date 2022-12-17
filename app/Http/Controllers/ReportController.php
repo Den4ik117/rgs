@@ -19,7 +19,7 @@ class ReportController extends Controller
         $report = new Report($users);
 //        dd($users);
 
-        $totalUsers = $users->count();
+//        $totalUsers = $users->count();
 
         $chunkSize = 9;
 
@@ -49,30 +49,30 @@ class ReportController extends Controller
 //        }
 
 //        $leftSpacing = $xMin->first()->total_x;
-        $leftSpacing = $report->x->min_value;
-        $rightSpacing = $leftSpacing + $report->x->interval_value;
-        $empiricalFunctionArray = [];
-        $empiricalFunctionArray[] = [PHP_INT_MIN, $leftSpacing];
-        for ($i = 0; $i < $report->x->intervals_number; $i++) {
-            $empiricalFunctionArray[] = [$leftSpacing, $rightSpacing];
-            $leftSpacing += $report->x->interval_value;
-            $rightSpacing += $report->x->interval_value;
-        }
-        $empiricalFunctionArray[] = [$leftSpacing, PHP_INT_MAX];
-        $empiricalFunctionArray = array_map(function ($intervals) use ($totalUsers, $users) {
-            $result = /*User::query()
-                    ->whereNotNull('total_x')
-                    ->whereNotNull('total_y')*/
-
-                    $users
-                    ->where('total_x', '<', $intervals[1])
-                    ->count() / $totalUsers;
-            return [
-                'left' => $intervals[0] === PHP_INT_MIN ? '-\infty' : $intervals[0],
-                'x' => $intervals[1] === PHP_INT_MAX ? '+\infty' : $intervals[1],
-                'y' => round($result, 4)
-            ];
-        }, $empiricalFunctionArray);
+//        $leftSpacing = $report->x->min_value;
+//        $rightSpacing = $leftSpacing + $report->x->interval_value;
+//        $empiricalFunctionArray = [];
+//        $empiricalFunctionArray[] = [PHP_INT_MIN, $leftSpacing];
+//        for ($i = 0; $i < $report->x->intervals_number; $i++) {
+//            $empiricalFunctionArray[] = [$leftSpacing, $rightSpacing];
+//            $leftSpacing += $report->x->interval_value;
+//            $rightSpacing += $report->x->interval_value;
+//        }
+//        $empiricalFunctionArray[] = [$leftSpacing, PHP_INT_MAX];
+//        $empiricalFunctionArray = array_map(function ($intervals) use ($totalUsers, $users) {
+//            $result = /*User::query()
+//                    ->whereNotNull('total_x')
+//                    ->whereNotNull('total_y')*/
+//
+//                    $users
+//                    ->where('total_x', '<', $intervals[1])
+//                    ->count() / $totalUsers;
+//            return [
+//                'left' => $intervals[0] === PHP_INT_MIN ? '-\infty' : $intervals[0],
+//                'x' => $intervals[1] === PHP_INT_MAX ? '+\infty' : $intervals[1],
+//                'y' => round($result, 4)
+//            ];
+//        }, $empiricalFunctionArray);
 //        dd(User::query()
 //            ->whereNotNull('total_x')
 //            ->whereNotNull('total_y')
@@ -107,29 +107,29 @@ class ReportController extends Controller
 //        }
 
 //        $leftSpacing = $yMin->first()->total_y;
-        $leftSpacing = $report->y->min_value;
-        $rightSpacing = $leftSpacing + $report->y->interval_value;
-        $empiricalFunctionArrayY = [];
-        $empiricalFunctionArrayY[] = [PHP_INT_MIN, $leftSpacing];
-        for ($i = 0; $i < $report->y->intervals_number; $i++) {
-            $empiricalFunctionArrayY[] = [$leftSpacing, $rightSpacing];
-            $leftSpacing += $report->y->interval_value;
-            $rightSpacing += $report->y->interval_value;
-        }
-        $empiricalFunctionArrayY[] = [$leftSpacing, PHP_INT_MAX];
-        $empiricalFunctionArrayY = array_map(function ($intervals) use ($totalUsers, $users) {
-            $result = /*User::query()
-                    ->whereNotNull('total_x')
-                    ->whereNotNull('total_y')*/
-                    $users
-                    ->where('total_y', '<', $intervals[1])
-                    ->count() / $totalUsers;
-            return [
-                'left' => $intervals[0] === PHP_INT_MIN ? '-\infty' : $intervals[0],
-                'x' => $intervals[1] === PHP_INT_MAX ? '+\infty' : $intervals[1],
-                'y' => round($result, 4)
-            ];
-        }, $empiricalFunctionArrayY);
+//        $leftSpacing = $report->y->min_value;
+//        $rightSpacing = $leftSpacing + $report->y->interval_value;
+//        $empiricalFunctionArrayY = [];
+//        $empiricalFunctionArrayY[] = [PHP_INT_MIN, $leftSpacing];
+//        for ($i = 0; $i < $report->y->intervals_number; $i++) {
+//            $empiricalFunctionArrayY[] = [$leftSpacing, $rightSpacing];
+//            $leftSpacing += $report->y->interval_value;
+//            $rightSpacing += $report->y->interval_value;
+//        }
+//        $empiricalFunctionArrayY[] = [$leftSpacing, PHP_INT_MAX];
+//        $empiricalFunctionArrayY = array_map(function ($intervals) use ($totalUsers, $users) {
+//            $result = /*User::query()
+//                    ->whereNotNull('total_x')
+//                    ->whereNotNull('total_y')*/
+//                    $users
+//                    ->where('total_y', '<', $intervals[1])
+//                    ->count() / $totalUsers;
+//            return [
+//                'left' => $intervals[0] === PHP_INT_MIN ? '-\infty' : $intervals[0],
+//                'x' => $intervals[1] === PHP_INT_MAX ? '+\infty' : $intervals[1],
+//                'y' => round($result, 4)
+//            ];
+//        }, $empiricalFunctionArrayY);
 
 //        dd($intervals2);
 
@@ -188,36 +188,36 @@ class ReportController extends Controller
 
 //        $h = 10;
 //        $leftSpacing = $xMin->first()->total_x;
-        $leftSpacing = $report->x->min_value;
-        $rightSpacing = $leftSpacing + $report->x->interval_value;
-        $x_B = $report->x->M;
+//        $leftSpacing = $report->x->min_value;
+//        $rightSpacing = $leftSpacing + $report->x->interval_value;
+//        $x_B = $report->x->M;
 //        $x_B = $expectedValue['x']['result'];
 
-        $bigTable = ['x' => [], 'y' => []];
-        $t = [];
-        for ($i = 0; $i < $report->x->intervals_number; $i++) {
-            $resultSubTable = [];
-            $resultSubTable['id'] = $i + 1;
-            $resultSubTable['interval'] = $leftSpacing . ' ― ' . $rightSpacing;
-            $resultSubTable['ni'] =/* User::query()
-                ->whereNotNull('total_x')
-                ->whereNotNull('total_y')*/
-                $users
-                ->whereBetween('total_x', [$leftSpacing + ($i === 0 ? 0 : 1), $rightSpacing])
-                ->count();
-            $resultSubTable['pi'] = round(exp(-($leftSpacing) / ($x_B)) - exp(-($rightSpacing) / ($x_B)), 4);
-            $resultSubTable['n`i'] = round($totalUsers * $resultSubTable['pi']);
-            $resultSubTable['ni - n`i'] = $resultSubTable['ni'] - $resultSubTable['n`i'];
-            $resultSubTable['(ni - n`i)^2'] = pow($resultSubTable['ni - n`i'],2);
-            $resultSubTable['(ni - n`i)^2/n`i'] = round($resultSubTable['(ni - n`i)^2'] / $resultSubTable['n`i'], 4);
-
-            $leftSpacing += $report->x->interval_value;
-            $rightSpacing += $report->x->interval_value;
-            $t[] = $resultSubTable;
-        }
-        $bigTable['x'] = $t;
-        $bigTable['x_n'] = collect($t)->sum('ni');
-        $bigTable['x_chi'] = collect($t)->sum('(ni - n`i)^2/n`i');
+//        $bigTable = ['x' => [], 'y' => []];
+//        $t = [];
+//        for ($i = 0; $i < $report->x->intervals_number; $i++) {
+//            $resultSubTable = [];
+//            $resultSubTable['id'] = $i + 1;
+//            $resultSubTable['interval'] = $leftSpacing . ' ― ' . $rightSpacing;
+//            $resultSubTable['ni'] =/* User::query()
+//                ->whereNotNull('total_x')
+//                ->whereNotNull('total_y')*/
+//                $users
+//                ->whereBetween('total_x', [$leftSpacing + ($i === 0 ? 0 : 1), $rightSpacing])
+//                ->count();
+//            $resultSubTable['pi'] = round(exp(-($leftSpacing) / ($x_B)) - exp(-($rightSpacing) / ($x_B)), 4);
+//            $resultSubTable['n`i'] = round($report->total * $resultSubTable['pi']);
+//            $resultSubTable['ni - n`i'] = $resultSubTable['ni'] - $resultSubTable['n`i'];
+//            $resultSubTable['(ni - n`i)^2'] = pow($resultSubTable['ni - n`i'],2);
+//            $resultSubTable['(ni - n`i)^2/n`i'] = round($resultSubTable['(ni - n`i)^2'] / $resultSubTable['n`i'], 4);
+//
+//            $leftSpacing += $report->x->interval_value;
+//            $rightSpacing += $report->x->interval_value;
+//            $t[] = $resultSubTable;
+//        }
+//        $bigTable['x'] = $t;
+//        $bigTable['x_n'] = collect($t)->sum('ni');
+//        $bigTable['x_chi'] = collect($t)->sum('(ni - n`i)^2/n`i');
         /*
                 $double = [];
         //        $doubleUsers = User::query()
@@ -308,87 +308,87 @@ class ReportController extends Controller
                 $rxy_formula = '\frac{' . $KXY . '}{' . $expectedValue['x']['result5'] . ' \cdot ' . $expectedValue['y']['result5'] . '}';
                 */
 
-        $doubleXY = [
-            'x' => [
-                5 => [0, 10],
-                15 => [11, 20],
-                25 => [21, 30],
-                35 => [31, 40],
-                45 => [41, 50],
-                55 => [51, 60],
-                65 => [61, 70],
-                75 => [71, 80],
-                85 => [81, 90],
-                95 => [91, 100],
-            ],
-            'y' => [
-                2 => [0, 4],
-                6 => [5, 8],
-                10 => [9, 12],
-                14 => [13, 16],
-                18 => [17, 20],
-                22 => [21, 24],
-                26 => [25, 28],
-                30 => [29, 32],
-                34 => [33, 36],
-                38 => [37, 40],
-                42 => [41, 44],
-            ],
-            'values' => [],
-            'nx' => [],
-            'intermediate' => [],
-            'yx' => [],
-            'points' => [],
-            'XY' => [],
-            '$XY' => []
-        ];
-        $i = 0;
-        foreach ($doubleXY['x'] as $total_x => $x_between) {
-            foreach ($doubleXY['y'] as $total_y => $y_between) {
-                $countUsers = /*User::query()*/
-                    $users
-                    ->whereBetween('total_x', $x_between)
-                    ->whereBetween('total_y', $y_between)
-                    ->count();
-                $doubleXY['values'][$total_x . ' ' . $total_y] = $countUsers;
-                $doubleXY['intermediate'][] = $countUsers * $total_y;
-                $doubleXY['$intermediate'][] = $countUsers . '\cdot' . $total_y;
-                $doubleXY['XY'][] = $total_x * $total_y * $countUsers;
-                if ($i < 8) {
-                    $doubleXY['$XY'][] = $total_x . '\cdot' . $total_y . '\cdot' . $countUsers;
-                }
-                $i++;
-            }
-            $nx = /*User::query()
-                ->whereNotNull('total_y')*/
-                $users
-                ->whereBetween('total_x', $x_between)
-                ->count();
-            $doubleXY['nx'][] = $nx;
-            $doubleXY['yx'][] = round((array_sum($doubleXY['intermediate'])) / $nx, 4);
-            $doubleXY['$yx'][] = ['key' => $total_x, 'value' => '(' . implode('+', $doubleXY['$intermediate']) . ') \frac{1}{' . $nx . '}'];
-            $doubleXY['points'][] = ['x' => $total_x, 'y' => end($doubleXY['yx'])];
-            $doubleXY['intermediate'] = [];
-            $doubleXY['$intermediate'] = [];
-        }
-        $doubleXY['XY'] = round(array_sum($doubleXY['XY']) / $totalUsers, 4);
-        $doubleXY['$XY'] = '(' . implode('+', $doubleXY['$XY']) . ' + \dots) \frac{1}{' . $totalUsers . '}';
-        $doubleXY['KXY'] = round($doubleXY['XY'] - $report->x->M * $report->y->M, 4);
-        $doubleXY['rxy'] = round($doubleXY['KXY'] / ($report->x->S * $report->y->S), 4);
+//        $doubleXY = [
+//            'x' => [
+//                5 => [0, 10],
+//                15 => [11, 20],
+//                25 => [21, 30],
+//                35 => [31, 40],
+//                45 => [41, 50],
+//                55 => [51, 60],
+//                65 => [61, 70],
+//                75 => [71, 80],
+//                85 => [81, 90],
+//                95 => [91, 100],
+//            ],
+//            'y' => [
+//                2 => [0, 4],
+//                6 => [5, 8],
+//                10 => [9, 12],
+//                14 => [13, 16],
+//                18 => [17, 20],
+//                22 => [21, 24],
+//                26 => [25, 28],
+//                30 => [29, 32],
+//                34 => [33, 36],
+//                38 => [37, 40],
+//                42 => [41, 44],
+//            ],
+//            'values' => [],
+//            'nx' => [],
+//            'intermediate' => [],
+//            'yx' => [],
+//            'points' => [],
+//            'XY' => [],
+//            '$XY' => []
+//        ];
+//        $i = 0;
+//        foreach ($doubleXY['x'] as $total_x => $x_between) {
+//            foreach ($doubleXY['y'] as $total_y => $y_between) {
+//                $countUsers = /*User::query()*/
+//                    $users
+//                    ->whereBetween('total_x', $x_between)
+//                    ->whereBetween('total_y', $y_between)
+//                    ->count();
+//                $doubleXY['values'][$total_x . ' ' . $total_y] = $countUsers;
+//                $doubleXY['intermediate'][] = $countUsers * $total_y;
+//                $doubleXY['$intermediate'][] = $countUsers . '\cdot' . $total_y;
+//                $doubleXY['XY'][] = $total_x * $total_y * $countUsers;
+//                if ($i < 8) {
+//                    $doubleXY['$XY'][] = $total_x . '\cdot' . $total_y . '\cdot' . $countUsers;
+//                }
+//                $i++;
+//            }
+//            $nx = /*User::query()
+//                ->whereNotNull('total_y')*/
+//                $users
+//                ->whereBetween('total_x', $x_between)
+//                ->count();
+//            $doubleXY['nx'][] = $nx;
+//            $doubleXY['yx'][] = round((array_sum($doubleXY['intermediate'])) / $nx, 4);
+//            $doubleXY['$yx'][] = ['key' => $total_x, 'value' => '(' . implode('+', $doubleXY['$intermediate']) . ') \frac{1}{' . $nx . '}'];
+//            $doubleXY['points'][] = ['x' => $total_x, 'y' => end($doubleXY['yx'])];
+//            $doubleXY['intermediate'] = [];
+//            $doubleXY['$intermediate'] = [];
+//        }
+//        $doubleXY['XY'] = round(array_sum($doubleXY['XY']) / $report->total, 4);
+//        $doubleXY['$XY'] = '(' . implode('+', $doubleXY['$XY']) . ' + \dots) \frac{1}{' . $report->total . '}';
+//        $doubleXY['KXY'] = round($doubleXY['XY'] - $report->x->M * $report->y->M, 4);
+//        $doubleXY['rxy'] = round($doubleXY['KXY'] / ($report->x->S * $report->y->S), 4);
 //        dd($doubleXY, array_sum($doubleXY['values']));
 
         return view('report', compact([
             'users',
-            'totalUsers',
+//            'totalUsers',
             'chunkSize',
 //            'usersSortedByX',
 //            'usersSortedByY',
 //            'intervals',
 //            'intervals2',
 //            'expectedValue',
-            'empiricalFunctionArray',
-            'empiricalFunctionArrayY',
-            'bigTable',
+//            'empiricalFunctionArray',
+//            'empiricalFunctionArrayY',
+//            'bigTable',
 //            'double',
 //            'graphic',
 //            'XY',
@@ -396,7 +396,7 @@ class ReportController extends Controller
 //            'KXY',
 //            'rxy',
 //            'rxy_formula',
-            'doubleXY',
+//            'doubleXY',
             'report',
         ]));
     }

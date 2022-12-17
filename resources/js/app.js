@@ -237,7 +237,7 @@ const chart3 = new LineChart(chartDiv3, {
 
 const chartDiv4 = document.querySelector('.chart_div_4');
 let series4 = JSON.parse(chartDiv4.dataset.data);
-series4 = [{
+const series45 = [{
     x: 0, y: 0
 }, ...series4.slice(1, series4.length - 1), {
     x: series4.slice(1, series4.length - 1).pop().x + 4, y: 1

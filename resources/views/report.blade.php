@@ -117,7 +117,7 @@
                     <td class="border px-1 py-1 text-center border-r-2 border-gray-300">{{ $user->total_y }}</td>
                 @endforeach
                 @if ($loop->last)
-                    @for ($i = 0; $i < ($chunkSize - $totalUsers % $chunkSize); $i++)
+                    @for ($i = 0; $i < ($chunkSize - $report->total % $chunkSize); $i++)
                         <td class="border px-1 py-1 text-center border-l-2 border-gray-300"></td>
                         <td class="border px-1 py-1 text-center border-r-2 border-gray-300"></td>
                     @endfor
@@ -128,7 +128,7 @@
         <tfoot>
         <tr>
             <td class="border px-1 py-1 text-center border-x-2 border-y-2 border-gray-300" colspan="100%">
-                $ N = {{ $totalUsers }} $
+                $ N = {{ $report->total }} $
             </td>
         </tr>
         </tfoot>
@@ -254,19 +254,43 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($empiricalFunctionArray as $interval)
-            <tr>
-                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>
-            </tr>
-        @endforeach
+{{--        @foreach($empiricalFunctionArray as $interval)--}}
+{{--            <tr>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>--}}
+{{--            </tr>--}}
+{{--        @endforeach--}}
+            @foreach($report->x->intervals as $interval)
+                @if ($loop->first)
+                    <tr>
+                        <td class="border px-6 py-4 text-center">$ {{ '(-\infty; ' . $interval->interval[0] . ']' }} $</td>
+                        <td class="border px-6 py-4 text-center">$ {{ $interval->interval[0] }} $</td>
+                        <td class="border px-6 py-4 text-center">$ 0 $</td>
+                    </tr>
+                @endif
+
+                <tr>
+                    <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->interval[1] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->accumulative }} $</td>
+                </tr>
+
+                @if ($loop->last)
+                    <tr>
+                        <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[1] . '; +\infty)' }} $</td>
+                        <td class="border px-6 py-4 text-center">$ +\infty $</td>
+                        <td class="border px-6 py-4 text-center">$ 1 $</td>
+                    </tr>
+                @endif
+            @endforeach
         </tbody>
     </table>
 
     <h3 class="text-lg mb-4">Кумулята:</h3>
 
-    <div class="chart_div_3" data-data="{{ collect($empiricalFunctionArray)->toJson() }}"></div>
+{{--    <div class="chart_div_3" data-data="{{ collect($empiricalFunctionArray)->toJson() }}"></div>--}}
+    <div class="chart_div_3" data-data="{{ $report->x->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->x->intervals->last()->interval[1] + $report->x->interval_value, 'y' => 1])->toJson() }}"></div>
 
     <h3 class="text-lg mb-4">Проверка критерия Пирсона</h3>
 
@@ -294,7 +318,7 @@ f(x) =
         <thead>
         <tr>
             <th class="border px-6 py-4 text-center">$ № $</th>
-            <th class="border px-6 py-4 text-center">$ x_{i-1} - x_i $</th>
+            <th class="border px-6 py-4 text-center">$ (x_{i-1}; x_i] $</th>
             <th class="border px-6 py-4 text-center">$ n_i $</th>
             <th class="border px-6 py-4 text-center">$ p_i $</th>
             <th class="border px-6 py-4 text-center">$ n'_i = p_i N $</th>
@@ -304,31 +328,65 @@ f(x) =
         </tr>
         </thead>
         <tbody>
-        @foreach($bigTable['x'] as $interval)
+{{--        @foreach($bigTable['x'] as $interval)--}}
+{{--            <tr>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['id'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['ni'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['pi'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['n`i'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['ni - n`i'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2/n`i'] }} $</td>--}}
+{{--            </tr>--}}
+{{--        @endforeach--}}
+{{--        <tr>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--        </tr>--}}
+        @foreach ($report->x->intervals as $interval)
             <tr>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['id'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['interval'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['ni'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['pi'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['n`i'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['ni - n`i'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['(ni - n`i)^2/n`i'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $loop->iteration }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ ($loop->first ? '[' : '(') . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->ni }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->pi }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->pni }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->dni }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->dni2 }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->pearson }} $</td>
             </tr>
         @endforeach
-        </tbody>
-        <tfoot>
         <tr>
             <td></td>
             <td></td>
-            <td class="border px-6 py-4 text-center">$ {{ $bigTable['x_n'] }} $</td>
+            <td class="border px-6 py-4 text-center">$ {{ $report->x->intervals->sum('ni') }} $</td>
+            <td class="border px-6 py-4 text-center">$ {{ $report->x->intervals->sum('pi') }} $</td>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td class="border px-6 py-4 text-center">$ \chi^2_{набл} = {{ $bigTable['x_chi'] }} $</td>
+            <td class="border px-6 py-4 text-center">$ \chi^2_{набл} = {{ $report->x->intervals->sum('pearson') }} $</td>
         </tr>
-        </tfoot>
+        </tbody>
+{{--        <tfoot>--}}
+{{--        <tr>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td class="border px-6 py-4 text-center">$ {{ $bigTable['x_n'] }} $</td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td class="border px-6 py-4 text-center">$ \chi^2_{набл} = {{ $bigTable['x_chi'] }} $</td>--}}
+{{--        </tr>--}}
+
+
+{{--        </tfoot>--}}
     </table>
 
     <p class="text-base mb-4 flex flex-col gap-2">
@@ -463,19 +521,48 @@ f(x) =
         </tr>
         </thead>
         <tbody>
-        @foreach($empiricalFunctionArrayY as $interval)
+{{--        @foreach($empiricalFunctionArrayY as $interval)--}}
+{{--            <tr>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>--}}
+{{--                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>--}}
+{{--            </tr>--}}
+{{--        @endforeach--}}
+{{--        <tr>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--        </tr>--}}
+        @foreach($report->y->intervals as $interval)
+            @if ($loop->first)
+                <tr>
+                    <td class="border px-6 py-4 text-center">$ {{ '(-\infty; ' . $interval->interval[0] . ']' }} $</td>
+                    <td class="border px-6 py-4 text-center">$ {{ $interval->interval[0] }} $</td>
+                    <td class="border px-6 py-4 text-center">$ 0 $</td>
+                </tr>
+            @endif
+
             <tr>
-                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval['left'] . '; ' . $interval['x'] . ($loop->last ? ')' : ']') }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['x'] }} $</td>
-                <td class="border px-6 py-4 text-center">$ {{ $interval['y'] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[0] . '; ' . $interval->interval[1] . ']' }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->interval[1] }} $</td>
+                <td class="border px-6 py-4 text-center">$ {{ $interval->accumulative }} $</td>
             </tr>
+
+            @if ($loop->last)
+                <tr>
+                    <td class="border px-6 py-4 text-center">$ {{ '(' . $interval->interval[1] . '; +\infty)' }} $</td>
+                    <td class="border px-6 py-4 text-center">$ +\infty $</td>
+                    <td class="border px-6 py-4 text-center">$ 1 $</td>
+                </tr>
+            @endif
         @endforeach
         </tbody>
     </table>
 
     <h3 class="text-lg mb-4">Кумулята:</h3>
 
-    <div class="chart_div_4" data-data="{{ collect($empiricalFunctionArrayY)->toJson() }}"></div>
+{{--    <div class="h" data-data="{{ collect($empiricalFunctionArrayY)->toJson() }}"></div>--}}
+    <div class="chart_div_4" data-data="{{ $report->y->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->y->intervals->last()->interval[1] + $report->y->interval_value, 'y' => 1])->toJson() }}"></div>
 
     <h2 class="text-xl mb-4">Двумерная выборка:</h2>
 
@@ -493,50 +580,46 @@ f(x) =
 
     <table class="w-full mb-4">
         <tbody class="text-xs">
-        @foreach($doubleXY['y'] as $total_y => $y_values)
-            @if ($loop->first)
-                <tr class="first-of-type:font-bold">
-                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ 'Y | X' }}</td>
-                    @foreach($doubleXY['x'] as $total_x => $x_values)
-                        <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $total_x }}</td>
-                    @endforeach
-                </tr>
-            @endif
-
             <tr class="first-of-type:font-bold">
-                <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $total_y }}</td>
-                @foreach($doubleXY['x'] as $total_x => $x_values)
-                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $doubleXY['values'][$total_x . ' ' . $total_y] }}</td>
+                <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ 'Y | X' }}</td>
+                @foreach($report->x->intervals as $int_x)
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $int_x->middle }}</td>
                 @endforeach
             </tr>
 
-            @if ($loop->last)
+            @foreach($report->y->intervals as $int_y)
                 <tr class="first-of-type:font-bold">
-                    <td class="first-of-type:font-bold border px-1 py-1 text-center">$ n_x $</td>
-                    @foreach($doubleXY['nx'] as $nx)
-                        <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $nx }}</td>
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $int_y->middle }}</td>
+                    @foreach($report->x->intervals as $int_x)
+                        <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $report->doubleXY['values'][$int_x->middle . ' ' . $int_y->middle] }}</td>
                     @endforeach
                 </tr>
-                <tr class="first-of-type:font-bold">
-                    <td class="first-of-type:font-bold border px-1 py-1 text-center">$ y_{x = x_i} $</td>
-                    @foreach($doubleXY['yx'] as $yx)
-                        <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $yx }}</td>
-                    @endforeach
-                </tr>
-            @endif
-        @endforeach
+            @endforeach
+
+            <tr class="first-of-type:font-bold">
+                <td class="first-of-type:font-bold border px-1 py-1 text-center">$ n_x $</td>
+                @foreach($report->doubleXY['nx'] as $nx)
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $nx }}</td>
+                @endforeach
+            </tr>
+            <tr class="first-of-type:font-bold">
+                <td class="first-of-type:font-bold border px-1 py-1 text-center">$ y_{x = x_i} $</td>
+                @foreach($report->doubleXY['yx'] as $yx)
+                    <td class="first-of-type:font-bold border px-1 py-1 text-center">{{ $yx }}</td>
+                @endforeach
+            </tr>
         </tbody>
     </table>
 
     <p class="text-base mb-4 flex flex-col gap-2">
-        @foreach($doubleXY['$yx'] as $yx)
-            <span>$ y_{x = {{ $yx['key'] }} } = {{ $yx['value'] }} = {{ $doubleXY['yx'][$loop->index] }} $</span>
+        @foreach($report->doubleXY['$yx'] as $yx)
+            <span>$ y_{x = {{ $yx['key'] }} } = {{ $yx['value'] }} = {{ $report->doubleXY['yx'][$loop->index] }} $</span>
         @endforeach
-        <span>$ \overline{XY} = {{ $doubleXY['$XY'] }} = {{ $doubleXY['XY'] }} $</span>
-        <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $doubleXY['XY'] }} - {{ $report->x->M }} \cdot {{ $report->y->M }} = {{ $doubleXY['KXY'] }} $</span>
-        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $doubleXY['KXY'] . '}{' . $report->x->S . ' \cdot ' . $report->y->S . '}' }} = {{ $doubleXY['rxy'] }} $</span>
+        <span>$ \overline{XY} = {{ $report->doubleXY['$XY'] }} = {{ $report->doubleXY['XY'] }} $</span>
+        <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $report->doubleXY['XY'] }} - {{ $report->x->M }} \cdot {{ $report->y->M }} = {{ $report->doubleXY['KXY'] }} $</span>
+        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $report->doubleXY['KXY'] . '}{' . $report->x->S . ' \cdot ' . $report->y->S . '}' }} = {{ $report->doubleXY['rxy'] }} $</span>
         <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
-        <span>$ y - {{ $report->y->M }} = {{ $doubleXY['rxy'] }} \frac{ {{ $report->y->S }} }{ {{ $report->x->S }} } (x - {{ $report->x->M }}) $</span>
+        <span>$ y - {{ $report->y->M }} = {{ $report->doubleXY['rxy'] }} \frac{ {{ $report->y->S }} }{ {{ $report->x->S }} } (x - {{ $report->x->M }}) $</span>
         <span>$ y = 0.1971 x  + 8.1991 $</span>
 {{--        @php($constanta = round($rxy * ($expectedValue['x']['result5'] / $expectedValue['y']['result5']), 4))--}}
 {{--        <span>$ x - {{ $expectedValue['x']['result'] }} = {{ $constanta }} (y - {{ $expectedValue['y']['result'] }}) $</span>--}}
@@ -545,7 +628,7 @@ f(x) =
     </p>
 
 {{--    <div class="chart_div_5" data-data="{{ json_encode($graphic) }}"></div>--}}
-    <div class="chart_div_5" data-data="{{ json_encode($doubleXY['points']) }}"></div>
+    <div class="chart_div_5" data-data="{{ json_encode($report->doubleXY['points']) }}"></div>
 
 {{--    <div class="chart_div"></div>--}}
 {{--    {{ dd($intervals) }}--}}
