@@ -9,13 +9,9 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                'sans': ['Source Sans Pro', ...defaultTheme.fontFamily.sans]
+                sans: ['Source Sans Pro', 'Nunito', ...defaultTheme.fontFamily.sans],
             },
-            colors: {
-                'dark-800': '#232326',
-                'dark-900': '#232326',
-            }
         },
     },
-    plugins: [],
-}
+    plugins: [require('@tailwindcss/forms')],
+};
