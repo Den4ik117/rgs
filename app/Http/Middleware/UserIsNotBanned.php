@@ -17,7 +17,7 @@ class UserIsNotBanned
     public function handle(Request $request, Closure $next)
     {
         if ($request->user()->isBanned()) {
-            abort(403, 'Вы забанены');
+            abort(404);
         }
 
         return $next($request);
