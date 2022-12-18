@@ -40,7 +40,7 @@ class SampleRequest extends FormRequest
             'chunk' => 'required|integer|min:1|max:20',
             'x_intervals' => 'nullable|integer|min:1|max:30',
             'y_intervals' => 'nullable|integer|min:1|max:30',
-            'is_public' => 'nullable',
+//            'is_public' => 'nullable',
         ];
     }
 

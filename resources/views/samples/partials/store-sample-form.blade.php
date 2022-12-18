@@ -49,13 +49,13 @@
 {{--            </div>--}}
 {{--        </div>--}}
 
-        <div>
-            <x-input-label for="is_public" class="flex items-center gap-2 cursor-pointer select-none">
-                <input type="checkbox" name="is_public" id="is_public" @checked(old('is_public', true))>
-                Другие пользователи могут просматривать и видеть ваши сэмплы
-            </x-input-label>
-            <x-input-error class="mt-2" :messages="$errors->get('is_public')" />
-        </div>
+{{--        <div>--}}
+{{--            <x-input-label for="is_public" class="flex items-center gap-2 cursor-pointer select-none">--}}
+{{--                <input type="checkbox" name="is_public" id="is_public" @checked(old('is_public', true))>--}}
+{{--                Другие пользователи могут просматривать и видеть ваши сэмплы--}}
+{{--            </x-input-label>--}}
+{{--            <x-input-error class="mt-2" :messages="$errors->get('is_public')" />--}}
+{{--        </div>--}}
 
 {{--        <div>--}}
 {{--            <x-input-label for="email" :value="__('Email')" />--}}

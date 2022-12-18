@@ -49,7 +49,7 @@ class SampleController extends Controller
             'user_id' => auth()->id(),
             'auto_x_intervals' => true,
             'auto_y_intervals' => true,
-            'is_public' => $request->boolean('is_public'),
+            'is_public' => false,
             ...$request->only('name', 'chunk', 'x_intervals', 'y_intervals'),
         ]);
 
@@ -113,7 +113,7 @@ class SampleController extends Controller
         $sample->update([
             'auto_x_intervals' => true,
             'auto_y_intervals' => true,
-            'is_public' => $request->boolean('is_public'),
+            'is_public' => false,
             ...$request->only('name', 'chunk', 'x_intervals', 'y_intervals'),
         ]);
 

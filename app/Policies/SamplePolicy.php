@@ -30,7 +30,7 @@ class SamplePolicy
      */
     public function view(User $user, Sample $sample): bool
     {
-        return $sample->is_public || $sample->user_id === $user->id;
+        return $sample->user_id === $user->id;
     }
 
     /**
