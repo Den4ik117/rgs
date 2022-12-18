@@ -10,11 +10,11 @@ class DashboardController extends Controller
     public function __invoke(Request $request)
     {
         $samples = $request->user()->samples;
-        $another_samples = Sample::query()
-            ->where('user_id', '!=', auth()->id())
-            ->where('is_public', true)
-            ->get();
+//        $another_samples = Sample::query()
+//            ->where('user_id', '!=', auth()->id())
+//            ->where('is_public', true)
+//            ->get();
 
-        return view('dashboard', compact(['samples', 'another_samples']));
+        return view('dashboard', compact(['samples', /*'another_samples'*/]));
     }
 }
