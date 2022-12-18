@@ -37,17 +37,25 @@
             <x-input-error class="mt-2" :messages="$errors->get('chunk')" />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <x-input-label for="x_intervals" :value="__('Сколько интервалов у X')" />
-                <x-text-input id="x_intervals" name="x_intervals" type="number" min="1" max="30" step="1" class="mt-1 block w-full" :value="old('x_intervals', $sample->x_intervals)" required autocomplete="off" />
-                <x-input-error class="mt-2" :messages="$errors->get('x_intervals')" />
-            </div>
-            <div>
-                <x-input-label for="y_intervals" :value="__('Сколько интервалов у Y')" />
-                <x-text-input id="y_intervals" name="y_intervals" type="number" min="1" max="30" step="1" class="mt-1 block w-full" :value="old('y_intervals', $sample->y_intervals)" required autocomplete="off" />
-                <x-input-error class="mt-2" :messages="$errors->get('y_intervals')" />
-            </div>
+{{--        <div class="grid grid-cols-2 gap-4">--}}
+{{--            <div>--}}
+{{--                <x-input-label for="x_intervals" :value="__('Сколько интервалов у X')" />--}}
+{{--                <x-text-input id="x_intervals" name="x_intervals" type="number" min="1" max="30" step="1" class="mt-1 block w-full" :value="old('x_intervals', $sample->x_intervals)" required autocomplete="off" />--}}
+{{--                <x-input-error class="mt-2" :messages="$errors->get('x_intervals')" />--}}
+{{--            </div>--}}
+{{--            <div>--}}
+{{--                <x-input-label for="y_intervals" :value="__('Сколько интервалов у Y')" />--}}
+{{--                <x-text-input id="y_intervals" name="y_intervals" type="number" min="1" max="30" step="1" class="mt-1 block w-full" :value="old('y_intervals', $sample->y_intervals)" required autocomplete="off" />--}}
+{{--                <x-input-error class="mt-2" :messages="$errors->get('y_intervals')" />--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+        <div>
+            <x-input-label for="is_public" class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" name="is_public" id="is_public" @checked($sample->is_public)>
+                Другие пользователи могут просматривать и видеть ваши сэмплы
+            </x-input-label>
+            <x-input-error class="mt-2" :messages="$errors->get('is_public')" />
         </div>
 
 {{--        <div>--}}

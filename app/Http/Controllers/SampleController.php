@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 
 class SampleController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Sample::class, 'sample');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +22,7 @@ class SampleController extends Controller
      */
     public function index()
     {
-        //
+        return to_route('dashboard');
     }
 
     /**
@@ -39,31 +44,18 @@ class SampleController extends Controller
     public function store(SampleRequest $request)
     {
         $request->checkMaxSamples();
-//        $validated = $request->validate([
-//            'name' => 'required|string|max:255',
-//            'samples' => 'required|json',
-//            'chunk' => 'required|integer|min:1|max:20',
-//            'x_intervals' => 'required|integer|min:1|max:30',
-//            'y_intervals' => 'required|integer|min:1|max:30',
-//        ]);
-//        dd($request->validated());
 
         $sample = Sample::query()->create([
             'user_id' => auth()->id(),
+            'auto_x_intervals' => true,
+            'auto_y_intervals' => true,
+            'is_public' => $request->boolean('is_public'),
             ...$request->only('name', 'chunk', 'x_intervals', 'y_intervals'),
-//            'name' => $request->validated()['name'],
-//            'chunk' => $request->validated()['chunk'],
-//            'x_intervals' => $request->validated()['x_intervals'],
-//            'y_intervals' => $request->validated()['y_intervals'],
         ]);
 
         $sample->values()->createMany($request->input('samples_array'));
 
-//        dd($sample, $sample->values);
-
         return to_route('dashboard')->with('success', __('Samples successfully created.'));
-
-//        $sam
     }
 
     /**
@@ -76,20 +68,26 @@ class SampleController extends Controller
     {
         $users = $sample
             ->values()
-//            ->whereNotNull('x')
-//            ->whereNotNull('y')
             ->get()
             ->shuffle();
 
-//        dd($users);
-
         $chunkSize = $sample->chunk;
 
-        $report = new UsersReport($users, $sample->x_intervals, $sample->y_intervals);
+        $x_intervals = $sample->x_intervals;
+        if ($sample->auto_x_intervals) {
+            $x_intervals = ceil(1 + 3.22 * log($users->count(), 10));
+        }
+
+        $y_intervals = $sample->y_intervals;
+        if ($sample->auto_y_intervals) {
+            $y_intervals = ceil(1 + 3.22 * log($users->count(), 10));
+        }
+
+        $report = new UsersReport($users, $x_intervals, $y_intervals);
 
         $user = auth()->user();
 
-        return view('samples.show', compact(['users', 'chunkSize', 'report', 'user']));
+        return view('samples.show', compact(['users', 'chunkSize', 'report', 'user', 'sample']));
     }
 
     /**
@@ -112,19 +110,15 @@ class SampleController extends Controller
      */
     public function update(SampleRequest $request, Sample $sample)
     {
-        $sample->update($request->only('name', 'chunk', 'x_intervals', 'y_intervals'));
+        $sample->update([
+            'auto_x_intervals' => true,
+            'auto_y_intervals' => true,
+            'is_public' => $request->boolean('is_public'),
+            ...$request->only('name', 'chunk', 'x_intervals', 'y_intervals'),
+        ]);
 
         $sample->values->toQuery()->delete();
         $sample->values()->createMany($request->input('samples_array'));
-//        foreach ($request->input('samples_array') as $value) {
-//            if ($sample->values()->where('x', $value['x'])->where('y', $value['y'])->count() === 0) {
-//                $sample->values()->create($value);
-//            }
-//        }
-//        $sample->values()->man
-//        $sample->values()->createMany($request->input('samples_array'));
-
-//        dd($sample, $sample->values);
 
         return to_route('samples.edit', $sample->id)->with('success', __('Samples successfully updated.'));
     }

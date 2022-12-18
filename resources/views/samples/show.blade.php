@@ -29,9 +29,9 @@
         <div class="flex flex-col">
             <h1 class="text-2xl mb-8 font-bold">Расчётно-графическая работа<br>по математической статистике</h1>
             <div class="mt-16 text-left ml-auto">
-                <p>Выполнил: <strong class="font-semibold">{{ $user->full_name }}</strong></p>
-                @if ($user->group)
-                    <p>Группа: <strong class="font-semibold">{{ $user->group }}</strong></p>
+                <p>Выполнил: <strong class="font-semibold">{{ $sample->user->full_name }}</strong></p>
+                @if ($sample->user->group)
+                    <p>Группа: <strong class="font-semibold">{{ $sample->user->group }}</strong></p>
                 @endif
                 <p>Преподаватель: <strong class="font-semibold">Поторочина Ксения Сергеевна</strong></p>
                 <p>Дата: <strong class="font-semibold">{{ now()->format('d.m.Y') }}</strong></p>
@@ -128,7 +128,7 @@
                     <td class="border px-1 py-1 text-center border-l-2 border-gray-300">{{ $user->x }}</td>
                     <td class="border px-1 py-1 text-center border-r-2 border-gray-300">{{ $user->y }}</td>
                 @endforeach
-                @if ($loop->last)
+                @if ($loop->last && ($chunkSize - $report->total % $chunkSize) !== $chunkSize)
                     @for ($i = 0; $i < ($chunkSize - $report->total % $chunkSize); $i++)
                         <td class="border px-1 py-1 text-center border-l-2 border-gray-300"></td>
                         <td class="border px-1 py-1 text-center border-r-2 border-gray-300"></td>
@@ -326,29 +326,31 @@ f(x) =
         </tbody>
     </table>
 
-    <p class="text-base mb-4 flex flex-col gap-2">
-        <span>Число степеней свободы: $ r = k - m - 1 = 10 - 1 - 1 = 8 $</span>
-        <span>$ \chi^2_{крит} = 13.362; \; при \, \alpha = 0.100$</span>
-        <span>$ \chi^2_{крит} = 15.507; \; при \, \alpha = 0.050$</span>
-        <span>$ \chi^2_{крит} = 17.535; \; при \, \alpha = 0.025$</span>
-        <span>$ \chi^2_{крит} = 18.168; \; при \, \alpha = 0.020$</span>
-        <span>$ \chi^2_{крит} = 20.090; \; при \, \alpha = 0.010$</span>
-        <span>$ \chi^2_{крит} = 21.955; \; при \, \alpha = 0.005$</span>
-        <span>$ \chi^2_{крит} = 26.124; \; при \, \alpha = 0.001$</span>
-    </p>
+{{--    <p class="text-base mb-4 flex flex-col gap-2">--}}
+{{--        <span>Число степеней свободы: $ r = k - m - 1 = 10 - 1 - 1 = 8 $</span>--}}
+{{--        <span>$ \chi^2_{крит} = 13.362; \; при \, \alpha = 0.100$</span>--}}
+{{--        <span>$ \chi^2_{крит} = 15.507; \; при \, \alpha = 0.050$</span>--}}
+{{--        <span>$ \chi^2_{крит} = 17.535; \; при \, \alpha = 0.025$</span>--}}
+{{--        <span>$ \chi^2_{крит} = 18.168; \; при \, \alpha = 0.020$</span>--}}
+{{--        <span>$ \chi^2_{крит} = 20.090; \; при \, \alpha = 0.010$</span>--}}
+{{--        <span>$ \chi^2_{крит} = 21.955; \; при \, \alpha = 0.005$</span>--}}
+{{--        <span>$ \chi^2_{крит} = 26.124; \; при \, \alpha = 0.001$</span>--}}
+{{--    </p>--}}
 
-    <p class="text-base mb-4">
-        Вывод: ни при каком уровне значимости $ \alpha $ распределение $ X $ не подчиняется показательному
-        распределению.
-        Почему так происходит? Из графика полигона частот мы можем предположить, что наиболее подходящее распределение ―
-        показательное распределение.
-        Так как график плавно убывает, что очень напоминает убывающую показательную функцию.
-        Но гипотеза $ H_0 $ не подтверждается.
-        Из таблицы мы видим, что у нас <strong>очень</strong> тяжёлые концы, которы и составляют большую часть $
-        \chi^2_{набл} $.
-        А интервалы под номерами 6, 7, 8 и 9 практически не накапливают ошибку ― идут почти вровень с показательными
-        распределением.
-    </p>
+{{--    <p class="text-base mb-4">--}}
+{{--        Вывод: ни при каком уровне значимости $ \alpha $ распределение $ X $ не подчиняется показательному--}}
+{{--        распределению.--}}
+{{--        Почему так происходит? Из графика полигона частот мы можем предположить, что наиболее подходящее распределение ―--}}
+{{--        показательное распределение.--}}
+{{--        Так как график плавно убывает, что очень напоминает убывающую показательную функцию.--}}
+{{--        Но гипотеза $ H_0 $ не подтверждается.--}}
+{{--        Из таблицы мы видим, что у нас <strong>очень</strong> тяжёлые концы, которы и составляют большую часть $--}}
+{{--        \chi^2_{набл} $.--}}
+{{--        А интервалы под номерами 6, 7, 8 и 9 практически не накапливают ошибку ― идут почти вровень с показательными--}}
+{{--        распределением.--}}
+{{--    </p>--}}
+
+    <p class="text-base mb-4">Здесь должен быть ваш вывод.</p>
 
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ Y $.</h3>
 
@@ -500,7 +502,7 @@ f(x) =
         <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $report->doubleXY['KXY'] . '}{' . $report->x->S . ' \cdot ' . $report->y->S . '}' }} = {{ $report->doubleXY['rxy'] }} $</span>
         <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
         <span>$ y - {{ $report->y->M }} = {{ $report->doubleXY['rxy'] }} \frac{ {{ $report->y->S }} }{ {{ $report->x->S }} } (x - {{ $report->x->M }}) $</span>
-        <span>$ y = 0.1971 x  + 8.1991 $</span>
+{{--        <span>$ y = 0.1971 x  + 8.1991 $</span>--}}
     </p>
 
     <div class="chart_div_5" data-data="{{ json_encode($report->doubleXY['points']) }}"></div>

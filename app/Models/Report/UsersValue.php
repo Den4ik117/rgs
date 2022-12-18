@@ -51,7 +51,7 @@ class UsersValue
         $this->sample_size = $this->max_value - $this->min_value;
         $this->intervals_number = $intervals;
 
-        $this->interval_value = $this->sample_size / $this->intervals_number;
+        $this->interval_value = ceil($this->sample_size / $this->intervals_number);
 
         $this->intervals = collect([]);
         for (

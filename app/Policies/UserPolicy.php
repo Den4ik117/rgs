@@ -2,11 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Sample;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class SamplePolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -25,12 +24,12 @@ class SamplePolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Sample  $sample
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Sample $sample): bool
+    public function view(User $user, User $model): bool
     {
-        return $sample->is_public || $sample->user_id === $user->id;
+        return false;
     }
 
     /**
@@ -41,41 +40,41 @@ class SamplePolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return false;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Sample  $sample
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Sample $sample): bool
+    public function update(User $user, User $model): bool
     {
-        return $sample->user_id === $user->id;
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Sample  $sample
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Sample $sample): bool
+    public function delete(User $user, User $model): bool
     {
-        return $sample->user_id === $user->id;
+        return false;
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Sample  $sample
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Sample $sample)
+    public function restore(User $user, User $model): bool
     {
         return false;
     }
@@ -84,10 +83,10 @@ class SamplePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Sample  $sample
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Sample $sample)
+    public function forceDelete(User $user, User $model): bool
     {
         return false;
     }

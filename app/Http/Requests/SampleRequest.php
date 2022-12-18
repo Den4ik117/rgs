@@ -38,8 +38,9 @@ class SampleRequest extends FormRequest
             'samples_array.*.x' => 'required|integer',
             'samples_array.*.y' => 'required|integer',
             'chunk' => 'required|integer|min:1|max:20',
-            'x_intervals' => 'required|integer|min:1|max:30',
-            'y_intervals' => 'required|integer|min:1|max:30',
+            'x_intervals' => 'nullable|integer|min:1|max:30',
+            'y_intervals' => 'nullable|integer|min:1|max:30',
+            'is_public' => 'nullable',
         ];
     }
 
