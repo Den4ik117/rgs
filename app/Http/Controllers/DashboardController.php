@@ -12,7 +12,7 @@ class DashboardController extends Controller
     {
         $samples = $request->user()->samples;
         $another_samples = Sample::query()
-            ->with(['values'])
+            ->with(['values', 'user'])
 //            ->whereHas('values', function (Builder $query) {
 //                $query->orderBy('')
 //            });
