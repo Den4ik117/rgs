@@ -382,7 +382,7 @@ f(x) =
         <span>$ {{ $report->y->type }}_{max} = {{ $report->y->max_value }};  \; m = {{ $report->y->max_values }} $</span>
         <span>$ \Delta {{ $report->y->type }} = {{ $report->y->type }}_{max} - {{ $report->y->type }}_{min} = {{ $report->y->max_value }} - {{ $report->y->min_value }} = {{ $report->y->sample_size }} $</span>
         <span>Посчитаем число интервалов по формуле Стёрджесса:</span>
-        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \lg {{ $report->total }} = {{ round(1 + 3.22 * log($report->total, 10), 4) }} \approx {{ round(1 + 3.22 * log($report->total, 10)) }} $</span>
+        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \lg {{ $report->total }} = {{ round(1 + 3.22 * log($report->total, 10), 4) }} \approx {{ $report->y->intervals_number }} $</span>
 {{--        <span>Но для удобства счёта возьмём число интервалов $ n = {{ $report->y->intervals_number }} $</span>--}}
         <span>$ h = \frac{ \Delta x }{n} = \frac{ {{ $report->y->sample_size }} }{ {{ $report->y->intervals_number }} } = {{ $report->y->interval_value }} $</span>
     </p>
