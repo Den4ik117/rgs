@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap"
           rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/admin.js'])
 </head>
 <body class="antialiased bg-white p-4">
 <article>
@@ -53,63 +53,72 @@
             <span>$ x_{max}, y_{max} - \mathrm{верхняя \, граница \, интервала} $</span>
             <span>$ \Delta x - \mathrm{размах \, выборки} $</span>
             <span>$ h - \mathrm{величина \, интервала} $</span>
-            <span>$ \overline{x}_в, \overline{y}_в - \mathrm{выборочное \, среднее} $</span>
-            <span>$ \overline{D}_в - \mathrm{средняя \, выборочная \, дисперсия} $</span>
-            <span>$ \sigma_в - \mathrm{выборочное \, среднее \, квадратическое \, отклонение} $</span>
-            <span>$ S^2 - \mathrm{несмещённая \, состоятельная \, оценка \, генеральной \, дисперсии} $</span>
-            <span>$ S - \mathrm{исправленное \, выборочное \, среднее \, квадратическое \, отклонение} $</span>
-            <span>$ A_S - \mathrm{ассиметрия} $</span>
-            <span>$ E_S - \mathrm{эксцесс} $</span>
-            <span>$ K_{XY} - \mathrm{коэффициент \, ковариации} $</span>
-            <span>$ r_{xy} - \mathrm{коэффициент \, корреляции} $</span>
+            @can('see-full-report', $sample)
+                <span>$ \overline{x}_в, \overline{y}_в - \mathrm{выборочное \, среднее} $</span>
+                <span>$ \overline{D}_в - \mathrm{средняя \, выборочная \, дисперсия} $</span>
+                <span>$ \sigma_в - \mathrm{выборочное \, среднее \, квадратическое \, отклонение} $</span>
+                <span>$ S^2 - \mathrm{несмещённая \, состоятельная \, оценка \, генеральной \, дисперсии} $</span>
+                <span>$ S - \mathrm{исправленное \, выборочное \, среднее \, квадратическое \, отклонение} $</span>
+                <span>$ A_S - \mathrm{ассиметрия} $</span>
+                <span>$ E_S - \mathrm{эксцесс} $</span>
+                <span>$ K_{XY} - \mathrm{коэффициент \, ковариации} $</span>
+                <span>$ r_{xy} - \mathrm{коэффициент \, корреляции} $</span>
+            @endcan
         </p>
     </div>
 
     <div class="flex flex-col" style="page-break-after: always; height: 297mm; display: none;">
         <h2 class="text-xl font-semibold mb-6 text-center">Введение</h2>
-        <p class="text-base mb-4">
-            Исследуем корреляцию между оценками студентов в смежных предметах: основы веб-технологий и технологии
-            программирования.
-            Будем брать случайного студента и смотреть его итоговый балл в обеих дисциплинах.
-            $ X $ - оценка студента по предмету «Основы веб-технологий».
-            $ Y $ - оценка студента по предмету «Технологии программирования».
-        </p>
-        <p class="text-base mb-4">
-            Вариации дискретные, так как имеют изолированные значения: $ X = \{0, 1, 2, \dots, 100\}; \; Y = \{0, 1, 2,
-            \dots, 44\} $.
-        </p>
-        <p class="text-base mb-4">
-            Материал взят из открытых ведомостей, которые регулярно обновляется, поэтому материал актуален на момент
-            написания работы ― {{ now()->format('d.m.Y') }}
-        </p>
-        <p class="text-base mb-4">
-            Цель: исследовать корреляцию между оценками студентов в смежных предметах.
-        </p>
-        <p class="text-base mb-4">
-            Способ отбора данных: простой случайный отбор.
-        </p>
-        <p class="text-base mb-2">
-            Ссылки:
-        </p>
-        <ul class="text-base mb-4 list-inside flex flex-col gap-1">
-            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://laravel.com/">PHP фреймворк,
-                    который лёг в основу генерации этого отчёта</a></li>
-            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://www.mathjax.org/">JS
-                    библиотека, с помощью которой отображаются LaTeX формулы</a></li>
-            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://tailwindcss.com/">CSS
-                    фреймворк, отвечающий за стилизацию страниц</a></li>
-            <li><a class="text-indigo-800 hover:text-indigo-900 underline"
-                   href="https://en.wikibooks.org/wiki/LaTeX/Mathematics">Руководство по LaTeX, которая позволяет
-                    создавать сложные математические формулы</a></li>
-            <li><a class="text-indigo-800 hover:text-indigo-900 underline"
-                   href="https://docs.google.com/spreadsheets/d/1TxpEzQQ-ObY7dnmQjaghiWfDDdwoflRO05VugkxgZYY/edit?usp=sharing">Ведомость
-                    по предмету «Основы веб-технологий»</a></li>
-            <li><a class="text-indigo-800 hover:text-indigo-900 underline"
-                   href="https://docs.google.com/spreadsheets/d/17ocFGE22HsBG8AK1DLlnHBl4MaTKWsPjeZ7M3ywS_n4/edit?usp=sharing">Ведомость
-                    по предмету «Технологии программирования»</a></li>
-            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://github.com/Den4ik117/rgs">Исходный
-                    код программы</a></li>
-        </ul>
+        <p class="text-base mb-4">Описание</p>
+        <p class="text-base mb-4">Вариации</p>
+        <p class="text-base mb-4">Источник</p>
+        <p class="text-base mb-4">Цель</p>
+        <p class="text-base mb-4">Способ отбора данных</p>
+        <p class="text-base mb-4">ссылки</p>
+{{--        p.text-base.mb-4{}--}}
+{{--        <p class="text-base mb-4">--}}
+{{--            Исследуем корреляцию между оценками студентов в смежных предметах: основы веб-технологий и технологии--}}
+{{--            программирования.--}}
+{{--            Будем брать случайного студента и смотреть его итоговый балл в обеих дисциплинах.--}}
+{{--            $ X $ - оценка студента по предмету «Основы веб-технологий».--}}
+{{--            $ Y $ - оценка студента по предмету «Технологии программирования».--}}
+{{--        </p>--}}
+{{--        <p class="text-base mb-4">--}}
+{{--            Вариации дискретные, так как имеют изолированные значения: $ X = \{0, 1, 2, \dots, 100\}; \; Y = \{0, 1, 2,--}}
+{{--            \dots, 44\} $.--}}
+{{--        </p>--}}
+{{--        <p class="text-base mb-4">--}}
+{{--            Материал взят из открытых ведомостей, которые регулярно обновляется, поэтому материал актуален на момент--}}
+{{--            написания работы ― {{ now()->format('d.m.Y') }}--}}
+{{--        </p>--}}
+{{--        <p class="text-base mb-4">--}}
+{{--            Цель: исследовать корреляцию между оценками студентов в смежных предметах.--}}
+{{--        </p>--}}
+{{--        <p class="text-base mb-4">--}}
+{{--            Способ отбора данных: простой случайный отбор.--}}
+{{--        </p>--}}
+{{--        <p class="text-base mb-2">--}}
+{{--            Ссылки:--}}
+{{--        </p>--}}
+{{--        <ul class="text-base mb-4 list-inside flex flex-col gap-1">--}}
+{{--            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://laravel.com/">PHP фреймворк,--}}
+{{--                    который лёг в основу генерации этого отчёта</a></li>--}}
+{{--            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://www.mathjax.org/">JS--}}
+{{--                    библиотека, с помощью которой отображаются LaTeX формулы</a></li>--}}
+{{--            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://tailwindcss.com/">CSS--}}
+{{--                    фреймворк, отвечающий за стилизацию страниц</a></li>--}}
+{{--            <li><a class="text-indigo-800 hover:text-indigo-900 underline"--}}
+{{--                   href="https://en.wikibooks.org/wiki/LaTeX/Mathematics">Руководство по LaTeX, которая позволяет--}}
+{{--                    создавать сложные математические формулы</a></li>--}}
+{{--            <li><a class="text-indigo-800 hover:text-indigo-900 underline"--}}
+{{--                   href="https://docs.google.com/spreadsheets/d/1TxpEzQQ-ObY7dnmQjaghiWfDDdwoflRO05VugkxgZYY/edit?usp=sharing">Ведомость--}}
+{{--                    по предмету «Основы веб-технологий»</a></li>--}}
+{{--            <li><a class="text-indigo-800 hover:text-indigo-900 underline"--}}
+{{--                   href="https://docs.google.com/spreadsheets/d/17ocFGE22HsBG8AK1DLlnHBl4MaTKWsPjeZ7M3ywS_n4/edit?usp=sharing">Ведомость--}}
+{{--                    по предмету «Технологии программирования»</a></li>--}}
+{{--            <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://github.com/Den4ik117/rgs">Исходный--}}
+{{--                    код программы</a></li>--}}
+{{--        </ul>--}}
     </div>
 
     <table class="w-full mb-8 text-xs" style="page-break-after: always;">
@@ -154,10 +163,12 @@
         <span>$ {{ strtoupper($report->x->type) }} = \{ {{ $report->x->type }}_i \} $</span>
         <span>$ {{ $report->x->type }}_{min} = {{ $report->x->min_value }}; \; m = {{ $report->x->min_values }} $</span>
         <span>$ {{ $report->x->type }}_{max} = {{ $report->x->max_value }};  \; m = {{ $report->x->max_values }} $</span>
-        <span>$ \Delta {{ $report->x->type }} = {{ $report->x->type }}_{max} - {{ $report->x->type }}_{min} = {{ $report->x->max_value }} - {{ $report->x->min_value }} = {{ $report->x->sample_size }} $</span>
-        <span>Посчитаем число интервалов по формуле Стёрджесса:</span>
-        <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \lg {{ $report->total }} = {{ round(1 + 3.22 * log($report->total, 10), 4) }} \approx {{ $report->x->intervals_number }} $</span>
-        <span>$ h = \frac{ \Delta x }{n} = \frac{ {{ $report->x->sample_size }} }{ {{ $report->x->intervals_number }} } = {{ $report->x->interval_value }} $</span>
+{{--        @can('view-full-report', $sample)--}}
+            <span>$ \Delta {{ $report->x->type }} = {{ $report->x->type }}_{max} - {{ $report->x->type }}_{min} = {{ $report->x->max_value }} - {{ $report->x->min_value }} = {{ $report->x->sample_size }} $</span>
+            <span>Посчитаем число интервалов по формуле Стёрджесса:</span>
+            <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \lg {{ $report->total }} = {{ round(1 + 3.22 * log($report->total, 10), 4) }} \approx {{ $report->x->intervals_number }} $</span>
+            <span>$ h = \frac{ \Delta x }{n} = \frac{ {{ $report->x->sample_size }} }{ {{ $report->x->intervals_number }} } = {{ $report->x->interval_value }} $</span>
+{{--        @endcan--}}
     </p>
 
     <h3 class="text-lg mb-4">Построим статистический ряд.</h3>
@@ -194,19 +205,24 @@
 
     <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
-    <div class="chart_div" style="height: 300px; max-width: 210mm;"
-         data-data="{{ $report->x->intervals->pluck('wi')->toJson() }}"
-         data-middle="{{ $report->x->intervals->pluck('middle')->toJson() }}"></div>
+    @can('see-full-report', $sample)
+        <div class="chart_one" style="height: 300px; max-width: 210mm;"
+             data-step="{{ $report->x->intervals->map(fn ($in, $key) => ['x' => $report->x->min_value + $key * $report->x->interval_value, 'y' => $in->wi])->prepend(['x' => $report->x->intervals->first()->interval[0], 'y' => 0])->push(['x' => $report->x->intervals->last()->interval[1], 'y' => 0])->toJson() }}"
+             data-function="{{ $report->x->intervals->map(fn ($in, $key) => ['x' => $in->middle, 'y' => $in->wi])->toJson() }}"
+        ></div>
+    @endcan
 
     <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
         <span>$ \overline{ {{ $report->x->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x_i \omega_i} = {{ $report->x->fM }} = {{ $report->x->M }} $</span>
         <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->x->fD }} = {{ $report->x->D }} $</span>
-        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->x->fs }} = {{ $report->x->s }} $</span>
-        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->x->fS2 }} = {{ $report->x->S2 }} $</span>
-        <span>$ S = \sqrt{S^2} = {{ $report->x->fS }} = {{ $report->x->S }} $</span>
-        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->x->fA }} = {{ $report->x->A }} $</span>
-        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->x->fE }} = {{ $report->x->E }} $</span>
+        @can('see-full-report', $sample)
+            <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->x->fs }} = {{ $report->x->s }} $</span>
+            <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->x->fS2 }} = {{ $report->x->S2 }} $</span>
+            <span>$ S = \sqrt{S^2} = {{ $report->x->fS }} = {{ $report->x->S }} $</span>
+            <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->x->fA }} = {{ $report->x->A }} $</span>
+            <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->x->fE }} = {{ $report->x->E }} $</span>
+        @endcan
     </p>
 
     <p class="text-base mb-4">
@@ -258,8 +274,14 @@
 
     <h3 class="text-lg mb-4">Кумулята:</h3>
 
-    <div class="chart_div_3"
-         data-data="{{ $report->x->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->x->intervals->last()->interval[1] + $report->x->interval_value, 'y' => 1])->toJson() }}"></div>
+{{--    <div class="chart_div_3"--}}
+{{--         data-data="{{ $report->x->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->x->intervals->last()->interval[1] + $report->x->interval_value, 'y' => 1])->toJson() }}"></div>--}}
+
+    @can('see-full-report', $sample)
+        <div class="chart_two"
+             data-data="{{ $report->x->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->x->intervals->last()->interval[1] + $report->x->interval_value, 'y' => 1])->toJson() }}"
+        ></div>
+    @endcan
 
     <h3 class="text-lg mb-4">Проверка критерия Пирсона</h3>
 
@@ -399,19 +421,27 @@ f(x) =
 
     <h3 class="text-lg mb-4">Гистограмма и полигон частот</h3>
 
-    <div class="chart_div_2" style="height: 300px; max-width: 210mm;"
-         data-data="{{ $report->y->intervals->pluck('wi')->toJson() }}"
-         data-middle="{{ $report->y->intervals->pluck('middle')->toJson() }}"></div>
+{{--    <div class="chart_div_2" style="height: 300px; max-width: 210mm;"--}}
+{{--         data-data="{{ $report->y->intervals->pluck('wi')->toJson() }}"--}}
+{{--         data-middle="{{ $report->y->intervals->pluck('middle')->toJson() }}"></div>--}}
+    @can('see-full-report', $sample)
+        <div class="chart_three" style="height: 300px; max-width: 210mm;"
+             data-step="{{ $report->y->intervals->map(fn ($in, $key) => ['x' => $report->y->min_value + $key * $report->y->interval_value, 'y' => $in->wi])->prepend(['x' => $report->y->intervals->first()->interval[0], 'y' => 0])->push(['x' => $report->y->intervals->last()->interval[1], 'y' => 0])->toJson() }}"
+             data-function="{{ $report->y->intervals->map(fn ($in, $key) => ['x' => $in->middle, 'y' => $in->wi])->toJson() }}"
+        ></div>
+    @endcan
 
     <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
         <span>$ \overline{ {{ $report->y->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x_i \omega_i} = {{ $report->y->fM }} = {{ $report->y->M }} $</span>
         <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->y->fD }} = {{ $report->y->D }} $</span>
-        <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->y->fs }} = {{ $report->y->s }} $</span>
-        <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->y->fS2 }} = {{ $report->y->S2 }} $</span>
-        <span>$ S = \sqrt{S^2} = {{ $report->y->fS }} = {{ $report->y->S }} $</span>
-        <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->y->fA }} = {{ $report->y->A }} $</span>
-        <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->y->fE }} = {{ $report->y->E }} $</span>
+        @can('see-full-report', $sample)
+            <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->y->fs }} = {{ $report->y->s }} $</span>
+            <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->y->fS2 }} = {{ $report->y->S2 }} $</span>
+            <span>$ S = \sqrt{S^2} = {{ $report->y->fS }} = {{ $report->y->S }} $</span>
+            <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->y->fA }} = {{ $report->y->A }} $</span>
+            <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->y->fE }} = {{ $report->y->E }} $</span>
+        @endcan
     </p>
 
     <h3 class="text-lg mb-4">Найдём эмпирическую функцию распределения и построим ее график.</h3>
@@ -454,9 +484,11 @@ f(x) =
     </table>
 
     <h3 class="text-lg mb-4">Кумулята:</h3>
-
-    <div class="chart_div_4"
-         data-data="{{ $report->y->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->y->intervals->last()->interval[1] + $report->y->interval_value, 'y' => 1])->toJson() }}"></div>
+    @can('see-full-report', $sample)
+        <div class="chart_div_4"
+             data-data="{{ $report->y->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->y->intervals->last()->interval[1] + $report->y->interval_value, 'y' => 1])->toJson() }}"
+        ></div>
+    @endcan
 
     <h2 class="text-xl mb-4">Двумерная выборка:</h2>
 
@@ -499,13 +531,20 @@ f(x) =
         @endforeach
         <span>$ \overline{XY} = {{ $report->doubleXY['$XY'] }} = {{ $report->doubleXY['XY'] }} $</span>
         <span>$ K_{XY} = \overline{XY} - \overline{X} \cdot \overline{Y} = {{ $report->doubleXY['XY'] }} - {{ $report->x->M }} \cdot {{ $report->y->M }} = {{ $report->doubleXY['KXY'] }} $</span>
-        <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $report->doubleXY['KXY'] . '}{' . $report->x->S . ' \cdot ' . $report->y->S . '}' }} = {{ $report->doubleXY['rxy'] }} $</span>
-        <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
-        <span>$ y - {{ $report->y->M }} = {{ $report->doubleXY['rxy'] }} \frac{ {{ $report->y->S }} }{ {{ $report->x->S }} } (x - {{ $report->x->M }}) $</span>
+        @can('see-full-report', $sample)
+            <span>$ r_{xy} = \frac{K_{XY}}{S_x S_y} = {{ '\frac{' . $report->doubleXY['KXY'] . '}{' . $report->x->S . ' \cdot ' . $report->y->S . '}' }} = {{ $report->doubleXY['rxy'] }} $</span>
+            <span>$ Y - \overline{Y} = r_{xy} \frac{S_y}{S_x}(X - \overline{X}) $</span>
+            <span>$ y - {{ $report->y->M }} = {{ $report->doubleXY['rxy'] }} \frac{ {{ $report->y->S }} }{ {{ $report->x->S }} } (x - {{ $report->x->M }}) $</span>
+        @endcan
 {{--        <span>$ y = 0.1971 x  + 8.1991 $</span>--}}
     </p>
 
-    <div class="chart_div_5" data-data="{{ json_encode($report->doubleXY['points']) }}"></div>
+    @can('see-full-report', $sample)
+    <div class="chart_div_5"
+         data-data="{{ json_encode($report->doubleXY['points']) }}"
+         data-line="{{ json_encode([['x' => $report->x->intervals->first()->middle, 'y' => $report->y($report->x->intervals->first()->middle)], ['x' => $report->x->intervals->last()->middle, 'y' => $report->y($report->x->intervals->last()->middle)]]) }}"
+    ></div>
+    @endcan
 </article>
 
 <script>

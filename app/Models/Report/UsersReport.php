@@ -63,4 +63,9 @@ class UsersReport
 
         $this->doubleXY = $doubleXY;
     }
+
+    public function y(int $x): float
+    {
+        return $this->doubleXY['rxy'] * ($this->y->S / $this->x->S) * ($x - $this->x->M) + $this->y->M;
+    }
 }

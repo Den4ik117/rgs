@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-div[class^=chart_div] {
+div[class^=chart_div],
+div[class^=chart] {
     height: 300px;
     max-width: 210mm;
 }
