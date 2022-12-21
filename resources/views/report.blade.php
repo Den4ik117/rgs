@@ -19,7 +19,7 @@
 </head>
 <body class="antialiased bg-white p-4">
 <article>
-    <div class="text-center flex flex-col justify-between" style="page-break-after: always; height: 297mm;">
+    <div class="text-center flex flex-col justify-between" style="page-break-after: always; height: 400mm;">
         <div>
             <p>Министерство образования и науки Российской Федерации</p>
             <p>Уральский федеральный университет</p>
@@ -109,6 +109,8 @@
         </ul>
     </div>
 
+    <h2 class="text-xl mb-6">Таблица пар $ X $ и $ Y $</h2>
+
     <table class="w-full mb-8 text-xs" style="page-break-after: always;">
         <thead>
         <tr>
@@ -143,7 +145,7 @@
         </tfoot>
     </table>
 
-    <h2 class="text-xl mb-6">Первичная обработка результатов эксперимента</h2>
+    <h2 class="text-xl mb-6">Часть 1. Первичная обработка результатов эксперимента.</h2>
 
     <h3 class="text-lg mb-4">Обработка одномерной СВ $ X $.</h3>
 
@@ -154,6 +156,7 @@
         <span>$ \Delta {{ $report->x->type }} = {{ $report->x->type }}_{max} - {{ $report->x->type }}_{min} = {{ $report->x->max_value }} - {{ $report->x->min_value }} = {{ $report->x->sample_size }} $</span>
         <span>Посчитаем число интервалов по формуле Стёрджесса:</span>
         <span>$ n = 1 + 3.22 \lg N = 1 + 3.22 \lg {{ $report->total }} = {{ round(1 + 3.22 * log($report->total, 10), 4) }} \approx {{ $report->x->intervals_number }} $</span>
+        <span>Возьмём чётное число интервалов, чтобы величина интервала $ h $ была целым числом.</span>
         <span>$ h = \frac{ \Delta x }{n} = \frac{ {{ $report->x->sample_size }} }{ {{ $report->x->intervals_number }} } = {{ $report->x->interval_value }} $</span>
     </p>
 
@@ -195,11 +198,12 @@
          data-data="{{ $report->x->intervals->pluck('wi')->toJson() }}"
          data-middle="{{ $report->x->intervals->pluck('middle')->toJson() }}"></div>
 
-    <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
+    <h3 class="text-lg mb-4" style="page-break-before: always;">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
         <span>$ \overline{ {{ $report->x->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x_i \omega_i} = {{ $report->x->fM }} = {{ $report->x->M }} $</span>
         <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->x->fD }} = {{ $report->x->D }} $</span>
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->x->fs }} = {{ $report->x->s }} $</span>
+        <span>Чтобы убедиться, что $ \overline{x}_в $ и $ \sigma_В $ посчитаны правильно, проверим себя. Посмотрим на гистограмму. Действительно, за счёт тяжёлого левого конца, выборочное среднее находится около начала интервала, а отклонение составляет $ \pm 32.9 $</span>
         <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->x->fS2 }} = {{ $report->x->S2 }} $</span>
         <span>$ S = \sqrt{S^2} = {{ $report->x->fS }} = {{ $report->x->S }} $</span>
         <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->x->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->x->fA }} = {{ $report->x->A }} $</span>
@@ -208,10 +212,10 @@
 
     <p class="text-base mb-4">
         Коэффициент асимметрии характеризует меру скошенности графика/вправо, а эксцесс ― меру его высоты.
-        То, что эти коэффициенты принимают большие значения, ожидаемо.
+        Эти коэффициенты равны нулю или близки к нему в случае <i>нормального</i> распределения.
         Из полигона частот мы уже могли сделать вывод, что распределение не является нормальным.
-        Большие значения коэффициентов помогают лишний раз убедиться, что распределение отличное от нормального.
-        На перёд ― для СВ $ Y $ коэффициенты тоже принимают большие значения, что позволяет сделать аналогичный вывод.
+        Посчитав эти коэффициенты, мы лишний раз убедились, что распределение отличное от нормального.
+        На перёд ― для СВ $ Y $ эти же коэффициенты не равны нулю, что позволяет сделать аналогичный вывод.
     </p>
 
     <h3 class="text-lg mb-4">Найдём эмпирическую функцию распределения и построим ее график.</h3>
@@ -343,11 +347,10 @@ f(x) =
         Но гипотеза $ H_0 $ не подтверждается.
         Из таблицы мы видим, что у нас <strong>очень</strong> тяжёлые концы, которы и составляют большую часть $
         \chi^2_{набл} $.
-        А интервалы под номерами 6, 7, 8 и 9 практически не накапливают ошибку ― идут почти вровень с показательными
-        распределением.
+        Отметим, что интервалы под номерами 6, 7, 8 и 9 практически не накапливают ошибку ― идут почти вровень с показательными распределением.
     </p>
 
-    <h3 class="text-lg mb-4">Обработка одномерной СВ $ Y $.</h3>
+    <h3 class="text-lg mb-4" style="page-break-before: always;">Обработка одномерной СВ $ Y $.</h3>
 
     <p class="text-base mb-4 flex flex-col gap-2">
         <span>$ {{ strtoupper($report->y->type) }} = \{ {{ $report->y->type }}_i \} $</span>
@@ -398,15 +401,17 @@ f(x) =
          data-data="{{ $report->y->intervals->pluck('wi')->toJson() }}"
          data-middle="{{ $report->y->intervals->pluck('middle')->toJson() }}"></div>
 
-    <h3 class="text-lg mb-4">Найдём числовые характеристики</h3>
+    <h3 class="text-lg mb-4" style="page-break-before: always;">Найдём числовые характеристики</h3>
     <p class="text-base mb-4 flex flex-col gap-2">
         <span>$ \overline{ {{ $report->y->type }} }_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x_i \omega_i} = {{ $report->y->fM }} = {{ $report->y->M }} $</span>
         <span>$ \overline{D}_в = \displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {x^2_i \omega_i} - (\overline{x}_в)^2 = {{ $report->y->fD }} = {{ $report->y->D }} $</span>
         <span>$ \sigma_в = \sqrt{\overline{D}_в} = {{ $report->y->fs }} = {{ $report->y->s }} $</span>
+        <span>Убедимся, что $ \overline{y}_в $ и $ \sigma_В $ посчитаны правильно. Из гистограммы видно, что ожидаемое значение находится левее центра, что соответствует действительности, а отклонение составляет $ \pm 12.3 $</span>
         <span>$ S^2 = \frac{N}{N - 1} \overline{D}_в = {{ $report->y->fS2 }} = {{ $report->y->S2 }} $</span>
         <span>$ S = \sqrt{S^2} = {{ $report->y->fS }} = {{ $report->y->S }} $</span>
         <span>$ A_S = \frac{\mu^3}{S^3} = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^3 \omega_i}}{S^3} = {{ $report->y->fA }} = {{ $report->y->A }} $</span>
         <span>$ E_S = \frac{\mu^4}{S^4} - 3 = \frac{\displaystyle\sum_{i=1}^{ {{ $report->y->intervals_number }} } {(x_i - \overline{x_в})^4 \omega_i}}{S^4} - 3 = {{ $report->y->fE }} = {{ $report->y->E }} $</span>
+        <span>Так как значения эксцесса и асимметрии не равны нулю, позволяет лишний раз убедиться, что распределение отличное от нормального.</span>
     </p>
 
     <h3 class="text-lg mb-4">Найдём эмпирическую функцию распределения и построим ее график.</h3>
@@ -453,7 +458,17 @@ f(x) =
     <div class="chart_div_4"
          data-data="{{ $report->y->intervals->map(fn ($in) => ['x' => $in->interval[1], 'y' => $in->accumulative])->prepend(['x' => 0, 'y' => 0])->push(['x' => $report->y->intervals->last()->interval[1] + $report->y->interval_value, 'y' => 1])->toJson() }}"></div>
 
-    <h2 class="text-xl mb-4">Двумерная выборка:</h2>
+
+    <h3 class="text-lg mb-4">Вывод по 1 части.</h3>
+
+    <ol class="text-base mb-4 list-decimal list-inside">
+        <li>Мы исследовали одномерные случайные величины $ X  $ и $ Y $.</li>
+        <li>Проверили расчёты на соответствие.</li>
+        <li>Убедились, что СВ $ X $ не подчиняется показательному распределению</li>
+        <li>Для обеих СВ построили накопительные функции $ F^*(x) $ и $ F^*(y) $.</li>
+    </ol>
+
+    <h2 class="text-xl mb-4" style="page-break-before: always;">Часть 2. Исследование двумерной выборки.</h2>
 
     <table class="w-full mb-4">
         <tbody class="text-xs">
@@ -500,7 +515,33 @@ f(x) =
         <span>$ y = 0.1971 x  + 8.1991 $</span>
     </p>
 
+    <h3 class="text-lg mb-4">Вывод по 2 части.</h3>
+
+    <p class="text-base mb-4">
+        Какую зависимость рассматривать (X от Y или Y от X) ― нам не важно: как X может зависеть от Y, так и Y может зависеть от X.
+    </p>
+
+    <p class="text-base mb-4">
+        Коэффициент корреляции примерно равен $ 0.5 $, что говорит о том, что зависимость величин и не слабая, и не сильная ― средняя.
+        Нельзя сказать, что зависимость совсем отсутствует, как и нельзя сказать, что зависимость между величинами очень сильная.
+    </p>
+
+    <p class="text-base mb-4">
+        Из графика ниже мы видим, что теоретическая линия регрессии усредняет эмпирическую (опытную) линию регрессии, которая на графике является ломаной линией.
+    </p>
+
     <div class="chart_div_5" data-data="{{ json_encode($report->doubleXY['points']) }}"></div>
+
+    <h2 class="text-xl mb-4" style="page-break-before: always;">Список используемой литературы.</h2>
+
+    <ul>
+        <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="http://edu.tltsu.ru/sites/sites_content/site216/html/media96435/lec_9.pdf">http://edu.tltsu.ru/sites/sites_content/site216/html/media96435/lec_9.pdf</a></li>
+        <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://en.wikibooks.org/wiki/LaTeX/Mathematics">https://en.wikibooks.org/wiki/LaTeX/Mathematics</a></li>
+        <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="http://mathprofi.ru/matematicheskaya_statistika.html">http://mathprofi.ru/matematicheskaya_statistika.html</a></li>
+        <li><a class="text-indigo-800 hover:text-indigo-900 underline" href="https://datascience.eu/ru/%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0-%D0%B8-%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D0%B0/%D1%87%D1%82%D0%BE-%D1%82%D0%B0%D0%BA%D0%BE%D0%B5-%D0%BA%D0%BE%D1%8D%D1%84%D1%84%D0%B8%D1%86%D0%B8%D0%B5%D0%BD%D1%82-%D0%BA%D0%BE%D1%80%D1%80%D0%B5%D0%BB%D1%8F%D1%86%D0%B8%D0%B8/">https://datascience.eu/ru/что-такое-коэффициент-корреляции</a></li>
+        <li><a class="text-indigo-800 hover:text-indigo-900 underline" href=""></a></li>
+        <li><a class="text-indigo-800 hover:text-indigo-900 underline" href=""></a></li>
+    </ul>
 </article>
 
 <script>
